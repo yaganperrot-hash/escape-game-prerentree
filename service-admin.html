@@ -228,21 +228,27 @@
 
           if (isError && isFlagged) {
             correctFlags++;
-            line.classList.remove('flagged');
-            line.classList.add('correct-flag');
           } else if (isError && !isFlagged) {
             missedErrors++;
-            line.classList.add('missed');
           } else if (!isError && isFlagged) {
             falseFlags++;
-            // Keep flagged state to show it was wrong
           }
         });
 
         if (correctFlags === 5 && falseFlags === 0) {
+          // Reussite seulement : on revele les 5 erreurs du contrat
+          lines.forEach(line => {
+            if (line.dataset.error === 'true') {
+              line.classList.remove('flagged');
+              line.classList.add('correct-flag');
+            }
+          });
+
           completeEnigme(resultDiv, 'A');
           showThomasMessage('Service administratif sécurisé ! Votre lettre : A');
         } else {
+          // Echec : on ne marque rien. Les lignes gardent l'etat choisi par le joueur,
+          // sinon le contrat designe lui-meme les erreurs ratees.
           let msg = correctFlags + '/5 erreurs trouvées.';
           if (falseFlags > 0) msg += ' ' + falseFlags + ' fausse(s) alerte(s).';
           if (missedErrors > 0) msg += ' ' + missedErrors + ' erreur(s) manquée(s).';

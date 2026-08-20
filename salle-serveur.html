@@ -308,34 +308,31 @@
 
       setTimeout(() => {
         validated = true;
-        let errors = 0;
 
-        logs.forEach((log, i) => {
-          const line = document.getElementById('log-' + i);
-          const dot = document.getElementById('dot-' + i);
+        const errors = logs.filter((log, i) => answers[i] !== log.answer).length;
 
-          if (answers[i] === log.answer) {
+        if (errors === 0) {
+          // Reussite : on marque les lignes et on affiche les corrections,
+          // qui deviennent un recapitulatif et non plus un indice.
+          logs.forEach((log, i) => {
+            const line = document.getElementById('log-' + i);
             line.classList.add('correct');
-            dot.classList.add('correct');
-          } else {
-            errors++;
-            line.classList.add('wrong');
-            dot.classList.add('wrong');
+            document.getElementById('dot-' + i).classList.add('correct');
             if (log.correction) {
               const corr = document.createElement('span');
               corr.className = 'correction';
               corr.textContent = log.correction;
               line.appendChild(corr);
             }
-          }
-        });
+          });
 
-        if (errors === 0) {
           completeEnigme(resultDiv, 'L');
           showThomasMessage('Logs vérifiés, infrastructure sécurisée ! Votre lettre : L');
         } else {
+          // Echec : aucun marquage, aucune correction. On ne dit pas lesquels sont faux,
+          // sinon il suffit d'inverser les lignes rouges pour gagner.
           showErrorResult(resultDiv, errors + ' log' + (errors > 1 ? 's' : '') + ' mal identifié' +
-            (errors > 1 ? 's' : '') + ' sur ' + logs.length + '. Corrigez vos réponses et revalidez.');
+            (errors > 1 ? 's' : '') + ' sur ' + logs.length + '. Relisez les logs et revalidez.');
         }
       }, 1500);
     }
