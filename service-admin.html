@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Administratif | ETNA Escape Game</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <style>
+    .contract {
+      background: #1a1a1a;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 28px;
+      margin: 20px 0;
+      font-size: 13px;
+      line-height: 2;
+    }
+    .contract-title {
+      text-align: center;
+      color: var(--accent-blue);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .contract-section {
+      margin-bottom: 20px;
+    }
+    .contract-section-title {
+      color: var(--accent-yellow);
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .contract-line {
+      padding: 4px 8px;
+      margin: 2px 0;
+      border-radius: 3px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .contract-line:hover {
+      background: rgba(86, 156, 214, 0.1);
+      border-color: var(--border-color);
+    }
+    .contract-line.flagged {
+      background: rgba(244, 135, 113, 0.15);
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+    }
+    .contract-line.flagged::after {
+      content: ' [ERREUR SIGNALÉE]';
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent-red);
+    }
+    .contract-line.correct-flag {
+      background: rgba(137, 209, 133, 0.15);
+      border-color: var(--success);
+    }
+    .contract-line.correct-flag::after {
+      content: ' [BONNE DÉTECTION]';
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--success);
+    }
+    .contract-line.missed {
+      background: rgba(220, 220, 170, 0.15);
+      border-color: var(--accent-yellow);
+    }
+    .contract-line.missed::after {
+      content: ' [ERREUR NON DÉTECTÉE]';
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent-yellow);
+    }
+
+    .contract-instructions {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 12px;
+      margin-bottom: 16px;
+      padding: 8px;
+      background: rgba(78, 201, 176, 0.1);
+      border-radius: 4px;
+    }
+
+    .error-counter {
+      text-align: center;
+      margin: 12px 0;
+      color: var(--accent-yellow);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="terminal-window" data-enigme="service-admin">
+    <div class="terminal-header">
+      <div class="terminal-controls">
+        <span class="terminal-button close"></span>
+        <span class="terminal-button minimize"></span>
+        <span class="terminal-button maximize"></span>
+      </div>
+      <div class="terminal-title">
+        <img src="https://etna.io/wp-content/themes/etna-refonte-theme/assets/images/logo-etna.png" alt="ETNA Logo">
+        <span>service-admin.terminal</span>
+      </div>
+      <div class="terminal-timer" id="timer">60:00</div>
+    </div>
+
+    <div class="terminal-body">
+      <div class="terminal-prompt">
+        <span class="terminal-prompt-symbol">$</span>
+        <span>./verify-contract.sh</span>
+      </div>
+
+      <div class="terminal-output">
+        <h1 class="typewriter" data-text="Service Administratif - Salle G12">Service Administratif - Salle G12</h1>
+
+        <div class="warning-box typewriter" data-text="Afin que vous ne trouviez pas d'alternance, le hacker a corrompu un contrat d'alternance dans nos fichiers. Trouvez les 5 erreurs qu'il y a glissées avant qu'il ne soit envoyé à l'entreprise !">
+          <strong>CONTRAT FALSIFIÉ</strong><br>
+          Afin que vous ne trouviez pas d'alternance, le hacker a corrompu un contrat d'alternance dans nos fichiers. Trouvez les 5 erreurs qu'il y a glissées avant qu'il ne soit envoyé à l'entreprise !
+        </div>
+
+        <div class="contract-instructions delayed-text" style="opacity:0;">
+          Cliquez sur les lignes qui contiennent une erreur pour les signaler. Il y a 5 erreurs à trouver.
+        </div>
+
+        <div class="error-counter delayed-text" style="opacity:0;" id="error-counter">
+          Erreurs signalées : 0 / 5
+        </div>
+
+        <!-- Contract document -->
+        <div class="contract delayed-text" style="opacity:0;" id="contract">
+          <div class="contract-title">Contrat d'Alternance</div>
+
+          <div class="contract-section">
+            <div class="contract-section-title">Employeur</div>
+            <div class="contract-line" data-error="false" onclick="toggleFlag(this)">Raison sociale : TechCorp Solutions SAS</div>
+            <div class="contract-line" data-error="true" data-reason="SIRET invalide (contient des lettres et des symboles)" onclick="toggleFlag(this)">SIRET : Z3: 2D= ::3 EZE</div>
+            <div class="contract-line" data-error="false" onclick="toggleFlag(this)">Adresse : 15 rue de la Paix, 75002 Paris</div>
+            <div class="contract-line" data-error="false" onclick="toggleFlag(this)">Représentée par : Marie LAMBERT, DRH</div>
+          </div>
+
+          <div class="contract-section">
+            <div class="contract-section-title">Alternant</div>
+            <div class="contract-line" data-error="false" onclick="toggleFlag(this)">Nom : Alex DUPONT</div>
+            <div class="contract-line" data-error="true" data-reason="Date incohérente (né au futur)" onclick="toggleFlag(this)">Né(e) le : 15/03/2030</div>
+            <div class="contract-line" data-error="false" onclick="toggleFlag(this)">Adresse : 42 avenue Victor Hugo, 94200 Ivry-sur-Seine</div>
+          </div>
+
+          <div class="contract-section">
+            <div class="contract-section-title">Formation</div>
+            <div class="contract-line" data-error="true" data-reason="Mauvais nom d'école (Numérologies au lieu de Numérique)" onclick="toggleFlag(this)">Établissement : ETNA - École des Techniques de Numérologies Appliquées</div>
+            <div class="contract-line" data-error="false" onclick="toggleFlag(this)">Diplôme préparé : Bachelor (Niveau 6)</div>
+            <div class="contract-line" data-error="false" onclick="toggleFlag(this)">Durée de la formation : 12 mois</div>
+          </div>
+
+          <div class="contract-section">
+            <div class="contract-section-title">Contrat</div>
+            <div class="contract-line" data-error="false" onclick="toggleFlag(this)">Type : Contrat d'apprentissage</div>
+            <div class="contract-line" data-error="true" data-reason="Dates absurdes (41/12 et 011/01 n'existent pas)" onclick="toggleFlag(this)">Date de début : 41/12/2012 - Date de fin : 011/01/1998</div>
+            <div class="contract-line" data-error="false" onclick="toggleFlag(this)">Rémunération : Selon grille légale en vigueur</div>
+          </div>
+
+          <div class="contract-section">
+            <div class="contract-section-title">Signatures</div>
+            <div class="contract-line" data-error="true" data-reason="Nom différent de l'employeur (Marias LAMBHERT vs Marie LAMBERT)" onclick="toggleFlag(this)">Signature employeur : Marias LAMBHERT ____________________</div>
+            <div class="contract-line" data-error="false" onclick="toggleFlag(this)">Signature alternant : Alex DUPONT ____________________</div>
+            <div class="contract-line" data-error="false" onclick="toggleFlag(this)">Fait à Paris, le 15/07/2026</div>
+          </div>
+        </div>
+
+        <div id="result"></div>
+
+        <div class="delayed-text" style="opacity:0; margin-top: 20px;">
+          <button id="validate-btn" onclick="validateContract()">Valider</button>
+          <button class="secondary" onclick="resetContract()">Recommencer</button>
+          <a href="hub.html"><button class="secondary">Retour au hub</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleFlag(line) {
+      // Don't allow changes after validation success
+      if (line.classList.contains('correct-flag') || line.classList.contains('missed')) return;
+
+      line.classList.toggle('flagged');
+      updateCounter();
+    }
+
+    function updateCounter() {
+      const flagged = document.querySelectorAll('.contract-line.flagged').length;
+      document.getElementById('error-counter').textContent = 'Erreurs signalées : ' + flagged + ' / 5';
+    }
+
+    function resetContract() {
+      document.querySelectorAll('.contract-line').forEach(line => {
+        line.className = 'contract-line';
+      });
+      document.getElementById('result').innerHTML = '';
+      updateCounter();
+    }
+
+    function validateContract() {
+      const resultDiv = document.getElementById('result');
+      showLoadingResult(resultDiv, 'Analyse du contrat');
+
+      setTimeout(() => {
+        const lines = document.querySelectorAll('.contract-line');
+        let correctFlags = 0;
+        let missedErrors = 0;
+        let falseFlags = 0;
+
+        lines.forEach(line => {
+          const isError = line.dataset.error === 'true';
+          const isFlagged = line.classList.contains('flagged');
+
+          // Clear previous validation classes
+          line.classList.remove('correct-flag', 'missed');
+
+          if (isError && isFlagged) {
+            correctFlags++;
+            line.classList.remove('flagged');
+            line.classList.add('correct-flag');
+          } else if (isError && !isFlagged) {
+            missedErrors++;
+            line.classList.add('missed');
+          } else if (!isError && isFlagged) {
+            falseFlags++;
+            // Keep flagged state to show it was wrong
+          }
+        });
+
+        if (correctFlags === 5 && falseFlags === 0) {
+          completeEnigme(resultDiv, 'A');
+          showThomasMessage('Service administratif sécurisé ! Votre lettre : A');
+        } else {
+          let msg = correctFlags + '/5 erreurs trouvées.';
+          if (falseFlags > 0) msg += ' ' + falseFlags + ' fausse(s) alerte(s).';
+          if (missedErrors > 0) msg += ' ' + missedErrors + ' erreur(s) manquée(s).';
+          showErrorResult(resultDiv, msg);
+        }
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

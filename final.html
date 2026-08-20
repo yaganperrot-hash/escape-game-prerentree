@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mot de passe final | ETNA Escape Game</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <div class="terminal-controls">
+        <span class="terminal-button close"></span>
+        <span class="terminal-button minimize"></span>
+        <span class="terminal-button maximize"></span>
+      </div>
+      <div class="terminal-title">
+        <img src="https://etna.io/wp-content/themes/etna-refonte-theme/assets/images/logo-etna.png" alt="ETNA Logo">
+        <span>mission-finale.terminal</span>
+      </div>
+      <div class="terminal-timer" id="timer">60:00</div>
+    </div>
+
+    <div class="terminal-body">
+
+      <!-- PHASE 1: Password input -->
+      <div id="password-phase">
+        <div class="terminal-prompt">
+          <span class="terminal-prompt-symbol">$</span>
+          <span>./neutralize-hacker.sh</span>
+        </div>
+
+        <div class="terminal-output">
+          <h1 class="typewriter" data-text="Neutralisation du hacker">Neutralisation du hacker</h1>
+
+          <p class="typewriter" data-text="Le mot obtenu est un indice qui permettra de déverrouiller les derniers dossiers cryptés afin que vous puissiez suivre votre formation.">
+            Le mot obtenu est un indice qui permettra de déverrouiller les derniers dossiers cryptés afin que vous puissiez suivre votre formation.
+          </p>
+
+          <!-- Show collected letters -->
+          <div class="delayed-text" style="opacity:0; text-align: center; margin: 30px 0;">
+            <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">Vos lettres collectées :</div>
+            <div id="collected-letters" style="display: flex; justify-content: center; gap: 12px; margin-bottom: 24px;">
+              <!-- Filled by JS -->
+            </div>
+          </div>
+
+          <div class="delayed-text" style="opacity:0; max-width: 400px; margin: 0 auto;">
+            <label for="final-password" style="display: block; margin-bottom: 8px; color: var(--accent-green); font-weight: 600; text-align: center;">
+              Mot de passe final :
+            </label>
+            <input
+              type="text"
+              id="final-password"
+              placeholder="Le mot de passe..."
+              style="font-size: 20px; text-align: center; letter-spacing: 4px; text-transform: uppercase;"
+              autocomplete="off"
+            >
+            <div style="text-align: center; margin-top: 16px;">
+              <button onclick="validateFinalPassword()">Neutraliser l'attaque</button>
+            </div>
+          </div>
+
+          <div id="result"></div>
+        </div>
+      </div>
+
+      <!-- PHASE 2: Victory (hidden initially) -->
+      <div id="victory-phase" style="display:none;">
+        <div class="terminal-prompt">
+          <span class="terminal-prompt-symbol">$</span>
+          <span>./mission-complete.sh --celebrate</span>
+        </div>
+
+        <div class="terminal-output congratulations">
+          <h1 style="font-size: 48px; margin: 40px 0;">
+            FÉLICITATIONS !
+          </h1>
+
+          <div class="success-box" style="font-size: 18px; margin: 30px 0;">
+            <strong>MISSION ACCOMPLIE</strong><br>
+            Vous avez déjoué les plans du hacker et sauvé l'ETNA !
+          </div>
+
+          <div style="background: var(--bg-tertiary); padding: 24px; border-radius: 8px; border: 2px solid var(--success); margin: 30px 0;">
+            <h2 style="color: var(--success); margin-bottom: 16px;">Vos exploits :</h2>
+            <ul style="list-style: none; padding: 0; line-height: 2.5;">
+              <li style="color: var(--success);">V - Career Center restauré (CV complété)</li>
+              <li style="color: var(--success);">O - Service Technique réparé (page login debuggée)</li>
+              <li style="color: var(--success);">L - Salle Serveur restaurée (fichiers classés)</li>
+              <li style="color: var(--success);">C - Service Pédagogique opérationnel (planning reconstitué)</li>
+              <li style="color: var(--success);">A - Service Administratif sécurisé (contrat vérifié)</li>
+              <li style="color: var(--success);">N - Hacker identifié : Yagan PERROT</li>
+            </ul>
+          </div>
+
+          <div class="info-box" style="font-size: 20px; margin: 30px 0;">
+            <strong>Bienvenue à l'ETNA !</strong><br>
+            Vous avez prouvé vos compétences. Vous êtes prêt(e) à rejoindre l'aventure !
+          </div>
+
+          <div style="margin: 40px 0;">
+            <p style="font-size: 16px; color: var(--text-secondary);">
+              Temps total : <strong id="final-time" style="color: var(--accent-yellow);">--:--</strong>
+            </p>
+          </div>
+
+          <div style="margin-top: 40px;">
+            <button onclick="replayGame()" style="font-size: 16px; padding: 12px 24px;">
+              Rejouer l'escape game
+            </button>
+          </div>
+
+          <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--border-color);">
+            <p style="color: var(--text-secondary); font-size: 14px;">
+              Escape Game créé pour l'ETNA<br>
+              Merci d'avoir joué !
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Melange les lettres, en garantissant que l'ordre affiche ne soit pas le mot lui-meme
+    function shuffleLetters(arr) {
+      const original = arr.join('');
+      let mixed;
+      do {
+        mixed = [...arr].sort(() => Math.random() - 0.5);
+      } while (mixed.join('') === original);
+      return mixed;
+    }
+
+    // Show collected letters on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('collected-letters');
+      const found = getFoundLetters();
+      // Les lettres sont affichees dans le desordre : au joueur de reconstituer le mot
+      const letters = shuffleLetters(['V', 'O', 'L', 'C', 'A', 'N']);
+
+      letters.forEach(letter => {
+        const el = document.createElement('div');
+        el.style.cssText = 'width:48px; height:48px; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; border-radius:6px; border:2px solid;';
+
+        if (found[letter]) {
+          el.style.background = 'rgba(137, 209, 133, 0.2)';
+          el.style.color = 'var(--success)';
+          el.style.borderColor = 'var(--success)';
+          el.textContent = letter;
+        } else {
+          el.style.background = 'var(--bg-primary)';
+          el.style.color = 'var(--text-secondary)';
+          el.style.borderColor = 'var(--border-color)';
+          el.textContent = '?';
+        }
+
+        container.appendChild(el);
+      });
+    });
+
+    function validateFinalPassword() {
+      const input = document.getElementById('final-password');
+      const resultDiv = document.getElementById('result');
+      if (!input) return;
+
+      resultDiv.innerHTML = '<div class="terminal-output" style="color: var(--accent-red);">Tentative de neutralisation<span class="loading-dots">...</span></div>';
+
+      setTimeout(() => {
+        const answer = normalizeInput(input.value);
+
+        if (answer === 'etna') {
+          resultDiv.innerHTML = '';
+
+          // Victoire : on arrete le compte a rebours
+          stopGameTimer();
+
+          // Show victory
+          document.getElementById('password-phase').style.display = 'none';
+          document.getElementById('victory-phase').style.display = 'block';
+
+          // Show final time
+          const startTime = parseInt(sessionStorage.getItem('escapeGameStartTime'));
+          if (startTime) {
+            const elapsed = Date.now() - startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            document.getElementById('final-time').textContent = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+          }
+
+          // Thomas final message
+          showThomasMessage('Le système est restauré. Votre inscription est sauvée. Bienvenue à l\'ETNA et bonne rentrée !');
+        } else if (answer === 'volcan') {
+          showErrorResult(resultDiv, 'VOLCAN n\'est pas le mot de passe, c\'est l\'indice. Quel volcan a donné son nom à l\'école ?');
+        } else {
+          showErrorResult(resultDiv, 'Mauvais mot de passe. Assemblez vos lettres : le mot obtenu vous mettra sur la piste.');
+        }
+      }, 2000);
+    }
+
+    function replayGame() {
+      sessionStorage.clear();
+      window.location.href = 'intro.html';
+    }
+  </script>
+</body>
+</html>

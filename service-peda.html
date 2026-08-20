@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Pédagogique | ETNA Escape Game</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <style>
+    .planning-intro {
+      margin-bottom: 16px;
+    }
+
+    /* Horaire field */
+    .horaire-field {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0;
+      padding: 12px;
+      background: rgba(78, 201, 176, 0.08);
+      border: 1px solid var(--accent-green);
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .horaire-field label {
+      color: var(--accent-green);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .horaire-slot {
+      min-width: 120px;
+      min-height: 36px;
+      padding: 6px 12px;
+      border: 1px dashed var(--accent-yellow);
+      border-radius: 4px;
+      background: rgba(220, 220, 170, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 13px;
+    }
+    .horaire-slot:hover {
+      background: rgba(86, 156, 214, 0.15);
+    }
+    .horaire-slot.filled {
+      background: rgba(86, 156, 214, 0.2);
+      color: var(--accent-blue);
+      font-weight: 600;
+      border: 1px solid var(--accent-blue);
+    }
+    .horaire-slot.correct {
+      background: rgba(137, 209, 133, 0.2);
+      color: var(--success);
+      border-color: var(--success);
+    }
+    .horaire-slot.incorrect {
+      background: rgba(244, 135, 113, 0.2);
+      color: var(--error);
+      border-color: var(--error);
+    }
+
+    /* Course chips pool */
+    .course-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0;
+    }
+    .course-chip {
+      padding: 8px 16px;
+      background: var(--accent-blue);
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .course-chip:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(86, 156, 214, 0.4);
+    }
+    .course-chip.selected {
+      border: 2px solid var(--accent-yellow);
+      box-shadow: 0 0 0 3px rgba(220, 220, 170, 0.3);
+    }
+    .course-chip.placed {
+      background: var(--text-secondary);
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    /* Calendar weeks */
+    .week-block {
+      margin: 16px 0;
+    }
+    .week-title {
+      color: var(--accent-green);
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 6px;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(78, 201, 176, 0.3);
+    }
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+    }
+    .day-cell {
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      font-size: 11px;
+    }
+    .day-header {
+      background: rgba(255,255,255,0.05);
+      padding: 4px 6px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 10px;
+      color: var(--text-secondary);
+    }
+    .day-content {
+      padding: 6px 4px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 10px;
+      line-height: 1.3;
+    }
+    .day-content.prefilled {
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .day-content.prefilled-bash {
+      color: var(--accent-yellow);
+      opacity: 0.7;
+    }
+    .day-content.prefilled-python {
+      color: var(--accent-blue);
+      opacity: 0.7;
+    }
+    .day-content.empty-slot {
+      border: 1px dashed var(--accent-yellow);
+      border-radius: 4px;
+      margin: 2px;
+      cursor: pointer;
+      background: rgba(220, 220, 170, 0.06);
+      transition: all 0.2s ease;
+    }
+    .day-content.empty-slot:hover {
+      background: rgba(86, 156, 214, 0.15);
+    }
+    .day-content.filled {
+      background: rgba(86, 156, 214, 0.2);
+      color: var(--accent-blue);
+      font-weight: 600;
+      font-style: normal;
+    }
+    .day-content.correct {
+      background: rgba(137, 209, 133, 0.2);
+      color: var(--success);
+    }
+    .day-content.incorrect {
+      background: rgba(244, 135, 113, 0.2);
+      color: var(--error);
+    }
+
+    /* Piscine legend */
+    .piscine-legend {
+      display: flex;
+      gap: 16px;
+      margin: 8px 0 16px 0;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .piscine-legend span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .legend-dot.bash { background: var(--accent-yellow); }
+    .legend-dot.python { background: var(--accent-blue); }
+
+    @media (max-width: 768px) {
+      .week-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .day-content {
+        min-height: 40px;
+        font-size: 9px;
+      }
+      .day-header {
+        font-size: 9px;
+      }
+      .horaire-field {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="terminal-window" data-enigme="service-peda">
+    <div class="terminal-header">
+      <div class="terminal-controls">
+        <span class="terminal-button close"></span>
+        <span class="terminal-button minimize"></span>
+        <span class="terminal-button maximize"></span>
+      </div>
+      <div class="terminal-title">
+        <img src="https://etna.io/wp-content/themes/etna-refonte-theme/assets/images/logo-etna.png" alt="ETNA Logo">
+        <span>service-peda.terminal</span>
+      </div>
+      <div class="terminal-timer" id="timer">60:00</div>
+    </div>
+
+    <div class="terminal-body">
+      <div class="terminal-prompt">
+        <span class="terminal-prompt-symbol">$</span>
+        <span>./restore-planning.sh</span>
+      </div>
+
+      <div class="terminal-output">
+        <h1 class="typewriter" data-text="Service Pédagogique - Salle G18">Service Pédagogique - Salle G18</h1>
+
+        <div class="warning-box typewriter" data-text="Le hacker a corrompu le planning de la piscine de pré-rentrée. Certaines informations ont été effacées. Replacez les événements manquants dans le calendrier.">
+          <strong>PLANNING CORROMPU</strong><br>
+          Le hacker a corrompu le planning de la piscine de pré-rentrée. Certaines informations ont été effacées. Replacez les événements manquants dans le calendrier.
+        </div>
+
+        <p class="typewriter" data-text="Sélectionnez une étiquette, puis cliquez sur la case correspondante.">
+          Sélectionnez une étiquette, puis cliquez sur la case correspondante.
+        </p>
+
+        <!-- Course chips pool -->
+        <div class="course-pool delayed-text" style="opacity:0;" id="course-pool">
+          <!-- Filled by JS -->
+        </div>
+
+        <!-- Horaire field -->
+        <div class="horaire-field delayed-text" style="opacity:0;">
+          <label>Horaire quotidien :</label>
+          <div class="horaire-slot" id="horaire-slot">???</div>
+        </div>
+
+        <!-- Piscine legend -->
+        <div class="piscine-legend delayed-text" style="opacity:0;">
+          <span><span class="legend-dot bash"></span> Piscine Bash (Mar 6 & Mer 7)</span>
+          <span><span class="legend-dot python"></span> Piscine Python (reste)</span>
+        </div>
+
+        <!-- Calendar -->
+        <div id="calendar" class="delayed-text" style="opacity:0;">
+          <!-- Filled by JS -->
+        </div>
+
+        <div id="result"></div>
+
+        <div class="delayed-text" style="opacity:0; margin-top: 20px;">
+          <button id="validate-btn" onclick="validatePlanning()">Valider</button>
+          <button class="secondary" onclick="resetPlanning()">Recommencer</button>
+          <a href="hub.html"><button class="secondary">Retour au hub</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =============================================
+    // PLANNING PISCINE PRE-RENTREE
+    // du lundi 28 sept au samedi 24 oct
+    // =============================================
+
+    const weeks = [
+      {
+        label: 'Semaine 1 : 28 sept - 3 oct',
+        days: [
+          { name: 'Lun 28', type: 'none' },
+          { name: 'Mar 29', type: 'none' },
+          { name: 'Mer 30', type: 'none' },
+          { name: 'Jeu 1',  type: 'none' },
+          { name: 'Ven 2',  type: 'empty', answer: 'Pédiluve 13h30' },
+          { name: 'Sam 3',  type: 'none' }
+        ]
+      },
+      {
+        label: 'Semaine 2 : 5 oct - 10 oct',
+        days: [
+          { name: 'Lun 5',  type: 'empty', answer: 'Rentrée 9h30' },
+          { name: 'Mar 6',  type: 'bash' },
+          { name: 'Mer 7',  type: 'bash' },
+          { name: 'Jeu 8',  type: 'python' },
+          { name: 'Ven 9',  type: 'python' },
+          { name: 'Sam 10', type: 'python' }
+        ]
+      },
+      {
+        label: 'Semaine 3 : 12 oct - 17 oct',
+        days: [
+          { name: 'Lun 12', type: 'empty', answer: 'Soutenances' },
+          { name: 'Mar 13', type: 'python' },
+          { name: 'Mer 14', type: 'python' },
+          { name: 'Jeu 15', type: 'python' },
+          { name: 'Ven 16', type: 'python' },
+          { name: 'Sam 17', type: 'python' }
+        ]
+      },
+      {
+        label: 'Semaine 4 : 19 oct - 24 oct',
+        days: [
+          { name: 'Lun 19', type: 'empty', answer: 'Soutenances' },
+          { name: 'Mar 20', type: 'python' },
+          { name: 'Mer 21', type: 'python' },
+          { name: 'Jeu 22', type: 'python' },
+          { name: 'Ven 23', type: 'python' },
+          { name: 'Sam 24', type: 'empty', answer: 'Clôture piscine' }
+        ]
+      }
+    ];
+
+    // Chips to place
+    const chips = [
+      { label: 'Pédiluve 13h30',   needed: 1 },
+      { label: 'Rentrée 9h30',     needed: 1 },
+      { label: '9h - 22h42',       needed: 1 },
+      { label: 'Soutenances',      needed: 2 },
+      { label: 'Clôture piscine',  needed: 1 }
+    ];
+
+    let selectedChip = null;
+    const placements = {};  // key = "weekIdx-dayIdx" or "horaire", value = chip label
+    let horairePlaced = null;
+
+    function initPlanning() {
+      // Reset state
+      selectedChip = null;
+      Object.keys(placements).forEach(k => delete placements[k]);
+      horairePlaced = null;
+
+      renderChips();
+      renderCalendar();
+      setupHoraireSlot();
+
+      // Clear result
+      const resultDiv = document.getElementById('result');
+      if (resultDiv) resultDiv.innerHTML = '';
+    }
+
+    function renderChips() {
+      const pool = document.getElementById('course-pool');
+      pool.innerHTML = '';
+
+      // Shuffle chips for display
+      const shuffled = [...chips].sort(() => Math.random() - 0.5);
+
+      shuffled.forEach(chip => {
+        const el = document.createElement('div');
+        el.className = 'course-chip';
+        el.textContent = chip.label;
+        el.dataset.chip = chip.label;
+        el.addEventListener('click', () => selectChip(el, chip.label));
+        pool.appendChild(el);
+      });
+    }
+
+    function renderCalendar() {
+      const calendar = document.getElementById('calendar');
+      calendar.innerHTML = '';
+
+      weeks.forEach((week, wIdx) => {
+        const block = document.createElement('div');
+        block.className = 'week-block';
+
+        const title = document.createElement('div');
+        title.className = 'week-title';
+        title.textContent = week.label;
+        block.appendChild(title);
+
+        const grid = document.createElement('div');
+        grid.className = 'week-grid';
+
+        week.days.forEach((day, dIdx) => {
+          const cell = document.createElement('div');
+          cell.className = 'day-cell';
+
+          const header = document.createElement('div');
+          header.className = 'day-header';
+          header.textContent = day.name;
+          cell.appendChild(header);
+
+          const content = document.createElement('div');
+          content.className = 'day-content';
+
+          if (day.type === 'none') {
+            content.classList.add('prefilled');
+            content.textContent = '-';
+            content.style.opacity = '0.3';
+          } else if (day.type === 'bash') {
+            content.classList.add('prefilled', 'prefilled-bash');
+            content.textContent = 'Piscine Bash';
+          } else if (day.type === 'python') {
+            content.classList.add('prefilled', 'prefilled-python');
+            content.textContent = 'Piscine Python';
+          } else if (day.type === 'empty') {
+            content.classList.add('empty-slot');
+            content.textContent = '???';
+            content.dataset.week = wIdx;
+            content.dataset.day = dIdx;
+            content.addEventListener('click', () => placeOnDay(content, wIdx, dIdx));
+          }
+
+          cell.appendChild(content);
+          grid.appendChild(cell);
+        });
+
+        block.appendChild(grid);
+        calendar.appendChild(block);
+      });
+    }
+
+    function setupHoraireSlot() {
+      const slot = document.getElementById('horaire-slot');
+      slot.textContent = '???';
+      slot.className = 'horaire-slot';
+      slot.addEventListener('click', () => placeOnHoraire(slot));
+    }
+
+    function selectChip(el, label) {
+      if (el.classList.contains('placed')) return;
+
+      // Deselect previous
+      document.querySelectorAll('.course-chip.selected').forEach(c => c.classList.remove('selected'));
+
+      if (selectedChip === label) {
+        selectedChip = null;
+        return;
+      }
+
+      selectedChip = label;
+      el.classList.add('selected');
+    }
+
+    function countPlaced(label) {
+      let count = 0;
+      Object.values(placements).forEach(v => { if (v === label) count++; });
+      if (horairePlaced === label) count++;
+      return count;
+    }
+
+    function getNeeded(label) {
+      const chip = chips.find(c => c.label === label);
+      return chip ? chip.needed : 1;
+    }
+
+    function markChipIfDone(label) {
+      if (countPlaced(label) >= getNeeded(label)) {
+        document.querySelectorAll(`.course-chip[data-chip="${label}"]`).forEach(c => {
+          c.classList.add('placed');
+          c.classList.remove('selected');
+        });
+      }
+    }
+
+    function reEnableChip(label) {
+      if (countPlaced(label) < getNeeded(label)) {
+        document.querySelectorAll(`.course-chip[data-chip="${label}"]`).forEach(c => {
+          c.classList.remove('placed');
+        });
+      }
+    }
+
+    function placeOnDay(content, wIdx, dIdx) {
+      if (!selectedChip) return;
+
+      const key = wIdx + '-' + dIdx;
+
+      // If already filled, remove old
+      if (placements[key]) {
+        const old = placements[key];
+        delete placements[key];
+        reEnableChip(old);
+      }
+
+      placements[key] = selectedChip;
+      content.textContent = selectedChip;
+      content.classList.add('filled');
+      content.classList.remove('correct', 'incorrect');
+
+      markChipIfDone(selectedChip);
+
+      // Deselect
+      document.querySelectorAll('.course-chip.selected').forEach(c => c.classList.remove('selected'));
+      selectedChip = null;
+    }
+
+    function placeOnHoraire(slot) {
+      if (!selectedChip) return;
+
+      // If already filled, remove old
+      if (horairePlaced) {
+        const old = horairePlaced;
+        horairePlaced = null;
+        reEnableChip(old);
+      }
+
+      horairePlaced = selectedChip;
+      slot.textContent = selectedChip;
+      slot.classList.add('filled');
+      slot.classList.remove('correct', 'incorrect');
+
+      markChipIfDone(selectedChip);
+
+      document.querySelectorAll('.course-chip.selected').forEach(c => c.classList.remove('selected'));
+      selectedChip = null;
+    }
+
+    function resetPlanning() {
+      Object.keys(placements).forEach(k => delete placements[k]);
+      horairePlaced = null;
+      selectedChip = null;
+      renderChips();
+      renderCalendar();
+
+      const slot = document.getElementById('horaire-slot');
+      slot.textContent = '???';
+      slot.className = 'horaire-slot';
+      // Re-attach listener (element was not replaced, but clear state)
+      slot.onclick = () => placeOnHoraire(slot);
+
+      const resultDiv = document.getElementById('result');
+      if (resultDiv) resultDiv.innerHTML = '';
+    }
+
+    function validatePlanning() {
+      const resultDiv = document.getElementById('result');
+      showLoadingResult(resultDiv, 'Vérification du planning');
+
+      setTimeout(() => {
+        let errors = 0;
+
+        // Check horaire
+        const horaireSlot = document.getElementById('horaire-slot');
+        if (horairePlaced === '9h - 22h42') {
+          horaireSlot.classList.add('correct');
+          horaireSlot.classList.remove('incorrect');
+        } else {
+          errors++;
+          if (horairePlaced) {
+            horaireSlot.classList.add('incorrect');
+            horaireSlot.classList.remove('correct');
+          }
+        }
+
+        // Check calendar slots
+        weeks.forEach((week, wIdx) => {
+          week.days.forEach((day, dIdx) => {
+            if (day.type !== 'empty') return;
+
+            const key = wIdx + '-' + dIdx;
+            const placed = placements[key];
+            const content = document.querySelector(`.day-content[data-week="${wIdx}"][data-day="${dIdx}"]`);
+
+            if (placed === day.answer) {
+              content.classList.add('correct');
+              content.classList.remove('incorrect');
+            } else {
+              errors++;
+              if (placed) {
+                content.classList.add('incorrect');
+                content.classList.remove('correct');
+              }
+            }
+          });
+        });
+
+        if (errors === 0) {
+          completeEnigme(resultDiv, 'C');
+          showThomasMessage('Le service pédagogique est opérationnel ! Votre lettre : C');
+        } else {
+          showErrorResult(resultDiv, errors + ' emplacement(s) incorrect(s) ou manquant(s). Vérifiez le planning.');
+        }
+      }, 1500);
+    }
+
+    document.addEventListener('DOMContentLoaded', initPlanning);
+  </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# Donnees sensibles
+logins.json
+
+# Systeme
+.DS_Store
+Thumbs.db
+
+# Environnement
+.env
+.env.local
+
+# Editeurs
+.vscode/
+*.swp
+*.swo
+
+# Divers
+node_modules/

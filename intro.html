@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intranet ETNA - Connexion</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ============================================
+       FAKE INTRA - Corporate Light Theme
+       ============================================ */
+    body.intra-mode {
+      background: #f5f5f5;
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .intra-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .intra-logo {
+      height: 48px;
+      margin-bottom: 8px;
+    }
+
+    .intra-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .intra-subtitle {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 32px;
+    }
+
+    .intra-form {
+      text-align: left;
+    }
+
+    .intra-field {
+      margin-bottom: 20px;
+    }
+
+    .intra-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .intra-field input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #333;
+      background: #fafafa;
+      transition: border-color 0.2s;
+      margin: 0;
+    }
+
+    .intra-field input:focus {
+      outline: none;
+      border-color: #0066cc;
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+      background: white;
+    }
+
+    .intra-field input::placeholder {
+      color: #bbb;
+    }
+
+    .intra-submit {
+      width: 100%;
+      padding: 14px;
+      background: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin: 8px 0 0 0;
+    }
+
+    .intra-submit:hover {
+      background: #0055aa;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .intra-submit:disabled {
+      background: #99c2e8;
+      cursor: not-allowed;
+    }
+
+    .intra-error {
+      color: #cc0000;
+      font-size: 13px;
+      margin-top: 12px;
+      min-height: 20px;
+    }
+
+    .intra-footer {
+      margin-top: 32px;
+      font-size: 11px;
+      color: #bbb;
+    }
+
+    /* ============================================
+       HACK SCREEN - Red overlay
+       ============================================ */
+    .hack-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0000;
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .hack-overlay.active {
+      display: flex;
+      animation: hackFlash 0.5s ease;
+    }
+
+    @keyframes hackFlash {
+      0% { background: white; }
+      20% { background: #ff0000; }
+      40% { background: #0a0000; }
+      60% { background: #330000; }
+      100% { background: #0a0000; }
+    }
+
+    .hack-warning {
+      font-size: 18px;
+      color: #ff3333;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      animation: glitch 0.3s infinite;
+    }
+
+    .hack-message {
+      font-size: 22px;
+      color: #ff4444;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      line-height: 1.6;
+      max-width: 600px;
+      margin-bottom: 24px;
+    }
+
+    .hack-demon {
+      font-size: 64px;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    /* Scanlines effect */
+    .hack-overlay::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 0, 0, 0.03) 2px,
+        rgba(255, 0, 0, 0.03) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* Thomas bubble on hack screen */
+    .thomas-intro {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #111;
+      border: 1px solid #4ec9b0;
+      border-left: 4px solid #4ec9b0;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      max-width: 420px;
+      z-index: 10000;
+      transform: translateY(150%);
+      transition: transform 0.5s ease;
+      box-shadow: 0 4px 24px rgba(78, 201, 176, 0.3);
+    }
+
+    .thomas-intro.show {
+      transform: translateY(0);
+    }
+
+    .thomas-intro-header {
+      color: #4ec9b0;
+      font-weight: 600;
+      font-size: 12px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #3e3e42;
+    }
+
+    .thomas-intro-text {
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .thomas-intro-btn {
+      width: 100%;
+      padding: 12px;
+      background: #4ec9b0;
+      color: #1a1a1a;
+      border: none;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin: 0;
+    }
+
+    .thomas-intro-btn:hover {
+      background: #3db89f;
+      transform: none;
+      box-shadow: none;
+    }
+
+    @media (max-width: 768px) {
+      .intra-container {
+        margin: 20px;
+        padding: 32px 24px;
+      }
+
+      .hack-message {
+        font-size: 16px;
+      }
+
+      .hack-warning {
+        font-size: 14px;
+      }
+
+      .thomas-intro {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body class="intra-mode">
+
+  <!-- PHASE 1: Fake Intra Login -->
+  <div class="intra-container" id="intra-login">
+    <img src="https://etna.io/wp-content/themes/etna-refonte-theme/assets/images/logo-etna.png" alt="ETNA" class="intra-logo">
+    <div class="intra-title">Intranet ETNA</div>
+    <div class="intra-subtitle">Espace étudiant</div>
+
+    <form class="intra-form" id="login-form" onsubmit="return handleLogin(event)">
+      <div class="intra-field">
+        <label for="login">Identifiant</label>
+        <input type="text" id="login" placeholder="prenom_nom" autocomplete="off">
+      </div>
+      <div class="intra-field">
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" placeholder="Votre mot de passe">
+      </div>
+      <button type="submit" class="intra-submit" id="submit-btn">Se connecter</button>
+      <div class="intra-error" id="login-error"></div>
+    </form>
+
+    <div class="intra-footer">ETNA - L'école de la nouvelle alternance</div>
+  </div>
+
+  <!-- PHASE 3: Hack Overlay -->
+  <div class="hack-overlay" id="hack-overlay">
+    <div class="hack-warning">&#9888; ALERTE SÉCURITÉ &#9888;</div>
+    <div class="hack-message">
+      L'ETNA a été hackée.<br>
+      Vous n'êtes pas autorisé à commencer votre année.
+    </div>
+    <div class="hack-demon">&#128520;</div>
+  </div>
+
+  <!-- PHASE 4: Thomas Message -->
+  <div class="thomas-intro" id="thomas-intro">
+    <div class="thomas-intro-header">&#128274; MESSAGE SÉCURISÉ</div>
+    <div class="thomas-intro-text" id="thomas-text"></div>
+    <button class="thomas-intro-btn" id="accept-btn" style="display:none;" onclick="acceptMission()">Accepter la mission</button>
+  </div>
+
+  <script>
+    let loginAttempts = 0;
+    let hackTriggered = false;
+
+    function handleLogin(e) {
+      e.preventDefault();
+      if (hackTriggered) return false;
+
+      const errorEl = document.getElementById('login-error');
+      const submitBtn = document.getElementById('submit-btn');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Connexion...';
+
+      setTimeout(() => {
+        loginAttempts++;
+        errorEl.textContent = 'Identifiants invalides. Veuillez réessayer.';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Se connecter';
+
+        // Trigger hack after first failed attempt, with 4s delay
+        if (loginAttempts >= 1 && !hackTriggered) {
+          hackTriggered = true;
+          setTimeout(triggerHack, 4000);
+        }
+      }, 1500);
+
+      return false;
+    }
+
+    function triggerHack() {
+      // Hide login
+      document.getElementById('intra-login').style.display = 'none';
+
+      // Show hack overlay
+      const overlay = document.getElementById('hack-overlay');
+      overlay.classList.add('active');
+
+      // Show Thomas after 3 seconds
+      setTimeout(showThomas, 3000);
+    }
+
+    function showThomas() {
+      const thomas = document.getElementById('thomas-intro');
+      thomas.classList.add('show');
+
+      // Typewriter effect for Thomas text
+      const text = "Bonjour, je suis Thomas Mauduit, chef du service informatique de l'ETNA.\n\nNotre système est sous attaque. Un hacker a pris le contrôle de nos services.\n\nJ'ai besoin de votre aide pour contrer le hacking en cours. 6 services ont été compromis. Chaque service restauré vous donnera une lettre. Ces lettres forment le mot de passe pour neutraliser l'attaque.\n\nÊtes-vous prêt ?";
+
+      const textEl = document.getElementById('thomas-text');
+      let i = 0;
+      textEl.textContent = '';
+
+      function type() {
+        if (i < text.length) {
+          textEl.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, 20);
+        } else {
+          // Show accept button
+          document.getElementById('accept-btn').style.display = 'block';
+        }
+      }
+
+      type();
+    }
+
+    function acceptMission() {
+      // Start the timer
+      sessionStorage.setItem('escapeGameStartTime', Date.now().toString());
+      // Clear any previous letters
+      sessionStorage.removeItem('lettresFound');
+      sessionStorage.removeItem('gameMode');
+      // Go to hub
+      window.location.href = 'hub.html';
+    }
+  </script>
+</body>
+</html>

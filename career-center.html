@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Center | ETNA Escape Game</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <style>
+    /* Etiquettes a placer */
+    .cv-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0;
+    }
+    .cv-chip {
+      padding: 8px 14px;
+      background: var(--accent-blue);
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      user-select: none;
+      max-width: 100%;
+      word-break: break-word;
+    }
+    .cv-chip:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(86, 156, 214, 0.4);
+    }
+    .cv-chip.selected {
+      border: 2px solid var(--accent-yellow);
+      box-shadow: 0 0 0 3px rgba(220, 220, 170, 0.3);
+    }
+    .cv-chip.placed {
+      background: var(--text-secondary);
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    /* Feuille de CV */
+    .cv-sheet {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 24px;
+      margin: 20px 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .cv-head {
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .cv-name {
+      color: var(--accent-blue);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .cv-job {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .cv-contact {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+    .cv-rule {
+      border: 0;
+      border-top: 1px solid var(--border-color);
+      margin: 18px 0 10px;
+    }
+    .cv-section-title {
+      color: var(--accent-yellow);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-decoration: underline;
+      margin-bottom: 8px;
+    }
+    .cv-entry {
+      margin-bottom: 14px;
+    }
+    .cv-entry-title {
+      text-decoration: underline;
+      margin-bottom: 4px;
+    }
+    .cv-sheet ul {
+      margin: 0 0 0 22px;
+      color: var(--text-secondary);
+    }
+    .cv-sheet li {
+      margin-bottom: 2px;
+    }
+    .cv-sheet p {
+      margin: 0 0 8px;
+    }
+    .cv-skill-line {
+      color: var(--text-secondary);
+    }
+    .cv-strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* Trous a completer */
+    .cv-slot {
+      display: inline-block;
+      min-width: 120px;
+      padding: 2px 10px;
+      margin: 2px 0;
+      border: 1px dashed var(--accent-blue);
+      border-radius: 4px;
+      background: rgba(86, 156, 214, 0.08);
+      color: var(--text-secondary);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      vertical-align: middle;
+    }
+    .cv-slot:hover {
+      background: rgba(86, 156, 214, 0.2);
+    }
+    .cv-slot.filled {
+      border-style: solid;
+      color: var(--text-primary);
+      background: rgba(86, 156, 214, 0.15);
+    }
+    .cv-slot.correct {
+      border-color: var(--success);
+      background: rgba(137, 209, 133, 0.15);
+      color: var(--success);
+    }
+    .cv-slot.incorrect {
+      border-color: var(--error);
+      background: rgba(244, 71, 71, 0.15);
+      color: var(--error);
+    }
+
+    @media (max-width: 600px) {
+      .cv-sheet {
+        padding: 16px;
+        font-size: 12px;
+      }
+      .cv-name {
+        font-size: 18px;
+      }
+      .cv-slot {
+        min-width: 90px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="terminal-window" data-enigme="career-center">
+    <div class="terminal-header">
+      <div class="terminal-controls">
+        <span class="terminal-button close"></span>
+        <span class="terminal-button minimize"></span>
+        <span class="terminal-button maximize"></span>
+      </div>
+      <div class="terminal-title">
+        <img src="https://etna.io/wp-content/themes/etna-refonte-theme/assets/images/logo-etna.png" alt="ETNA Logo">
+        <span>career-center.terminal</span>
+      </div>
+      <div class="terminal-timer" id="timer">60:00</div>
+    </div>
+
+    <div class="terminal-body">
+      <div class="terminal-prompt">
+        <span class="terminal-prompt-symbol">$</span>
+        <span>./restore-career-center.sh</span>
+      </div>
+
+      <div class="terminal-output">
+        <h1 class="typewriter" data-text="Career Center - Salle G01">Career Center - Salle G01</h1>
+
+        <div class="warning-box typewriter" data-text="Le hacker a effacé six informations du CV modèle que le Career Center donne aux étudiants. Replacez chaque information au bon endroit pour restaurer le document.">
+          <strong>SERVICE COMPROMIS</strong><br>
+          Le hacker a effacé six informations du CV modèle que le Career Center donne aux étudiants. Replacez chaque information au bon endroit pour restaurer le document.
+        </div>
+
+        <p class="typewriter" data-text="Sélectionnez une étiquette, puis cliquez sur le trou correspondant.">
+          Sélectionnez une étiquette, puis cliquez sur le trou correspondant.
+        </p>
+
+        <div class="cv-pool delayed-text" style="opacity:0;" id="cv-pool">
+          <!-- Rempli par JS -->
+        </div>
+
+        <!-- CV modele ATS -->
+        <div class="cv-sheet delayed-text" style="opacity:0;">
+          <div class="cv-head">
+            <div class="cv-name">Morgane FORRA</div>
+            <div class="cv-job">Cheffe de projet Data / IA</div>
+            <div class="cv-contact">Mobile sur Paris &amp; Île de France / Permis B + Véhicule personnel</div>
+            <div class="cv-contact">
+              01 23 45 67 89 / <span class="cv-slot" data-slot="email">???</span> / LinkedIn / GitHub
+            </div>
+          </div>
+
+          <hr class="cv-rule">
+          <div class="cv-section-title">Profil</div>
+          <p>
+            De nature curieuse, j'aime analyser et comprendre le monde qui m'entoure, c'est pourquoi j'ai choisi
+            la spécialisation <span class="cv-slot" data-slot="specialisation">???</span>
+            dans mon cursus en 3e année de Bachelor à l'ETNA.
+          </p>
+          <p>
+            Je recherche aujourd'hui à mettre mes compétences au service d'une entreprise engagée dans le bien-être
+            de ses équipes ainsi qu'une croissance durable.
+          </p>
+          <p>
+            Rythme d'alternance : <span class="cv-slot" data-slot="rythme">???</span>
+          </p>
+
+          <hr class="cv-rule">
+          <div class="cv-section-title">Expériences professionnelles</div>
+
+          <div class="cv-entry">
+            <div class="cv-entry-title">
+              Data Analyste - <span class="cv-slot" data-slot="entreprise">???</span> (Février à Juillet 2026)
+            </div>
+            <ul>
+              <li>Développement d'un outil de traitement et d'analyse de données</li>
+              <li>Création d'une interface avec <span class="cv-strong">Tkinter</span></li>
+              <li>Manipulation et traitement de données avec <span class="cv-strong">Pandas</span></li>
+              <li>Génération et manipulation de fichiers <span class="cv-strong">Excel</span> avec <span class="cv-strong">OpenPyXL</span> et <span class="cv-strong">XlsxWriter</span></li>
+              <li>Création de visualisations de données avec <span class="cv-strong">Matplotlib</span></li>
+            </ul>
+          </div>
+
+          <div class="cv-entry">
+            <div class="cv-entry-title">Contrôle Qualité - BIOPHARM (Mai à Juillet 2019)</div>
+            <ul>
+              <li>Contrôle qualité et suivi de la production de médicaments</li>
+              <li>Vérification de conformité aux normes et réalisation des rapports d'analyse de tests microbiologiques</li>
+              <li>Création de rapports de données chiffrées</li>
+            </ul>
+          </div>
+
+          <hr class="cv-rule">
+          <div class="cv-section-title">Projets personnels</div>
+
+          <div class="cv-entry">
+            <div class="cv-entry-title">ETN'Air</div>
+            <ul>
+              <li>Conception et modélisation d'une base de données relationnelle avec <span class="cv-strong">SQL</span></li>
+              <li>Développement de l'<span class="cv-strong">API RESTFul</span> avec <span class="cv-strong">Express.js et Prisma ORM</span></li>
+              <li>Implémentation de l'authentification et de la gestion des bases de données utilisateurs</li>
+              <li>Développement d'une plateforme de réservation de locations courtes durées</li>
+              <li>Développement du front-end avec <span class="cv-strong">Vue.js</span></li>
+            </ul>
+          </div>
+
+          <div class="cv-entry">
+            <div class="cv-entry-title">EAZ'EMPLOI</div>
+            <ul>
+              <li>Analyse d'un DataSet d'offres d'emploi pour identifier les compétences les plus recherchées, les écarts salariaux et les tendances du marché</li>
+              <li>Nettoyage et structuration des données avec <span class="cv-strong">Python</span> et <span class="cv-strong">Pandas</span></li>
+              <li>Exploitation statistique des résultats et création de rapports permettant de mettre en évidence les principaux insights</li>
+            </ul>
+          </div>
+
+          <hr class="cv-rule">
+          <div class="cv-section-title">Formations</div>
+          <p>
+            ETNA - <span class="cv-slot" data-slot="diplome">???</span>, spécialisation Data / IA<br>
+            <span class="cv-slot" data-slot="annees">???</span>
+          </p>
+          <p>
+            Lycée François Mansart - BAC ES, spécialisations sciences politiques, économiques et sociales<br>
+            (2019)
+          </p>
+
+          <hr class="cv-rule">
+          <div class="cv-section-title">Compétences</div>
+          <div class="cv-skill-line">Développement web : Vue.js, React, Next.js, TypeScript, JavaScript, PHP</div>
+          <div class="cv-skill-line">Applications et logiciels : Python, C#, C++, C, Java</div>
+          <div class="cv-skill-line">Bases de données : SQL, PL/SQL, MySQL, phpMyAdmin</div>
+          <div class="cv-skill-line">Gestion de versions : Git, GitHub, GitLab</div>
+          <div class="cv-skill-line">Environnements : Linux (Debian, Ubuntu, Arch Linux, Fedora, CachyOs, Pop!_Os), Windows</div>
+          <div class="cv-skill-line">Outils et APIs : Zed, API REST, Postman, Visual Studio Code</div>
+          <div class="cv-skill-line">Méthodologie : agile, scrum</div>
+
+          <hr class="cv-rule">
+          <div class="cv-section-title">Hobbies</div>
+          <div class="cv-skill-line">Équitation et l'éthologie, les voyages et le sport</div>
+        </div>
+
+        <div id="result"></div>
+
+        <div class="delayed-text" style="opacity:0; margin-top: 20px;">
+          <button id="validate-btn" onclick="validateCV()">Valider</button>
+          <button class="secondary" onclick="resetCV()">Recommencer</button>
+          <a href="hub.html"><button class="secondary">Retour au hub</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =============================================
+    // CV A TROUS - modele ATS du Career Center
+    // =============================================
+
+    // Reponse attendue pour chaque trou
+    const answers = {
+      email:          'morgane.forra@etna.io',
+      specialisation: 'Data & IA',
+      rythme:         '1 vendredi sur 3 à l\'école + 33h de e-learning',
+      entreprise:     'ENEDIS',
+      diplome:        'Bachelor Concepteur Développeur d\'Applications',
+      annees:         '(Octobre 2026 - Janvier 2028)'
+    };
+
+    let selectedChip = null;
+    const placements = {};   // data-slot -> label place
+
+    function initCV() {
+      selectedChip = null;
+      Object.keys(placements).forEach(k => delete placements[k]);
+
+      renderChips();
+      renderSlots();
+
+      const resultDiv = document.getElementById('result');
+      if (resultDiv) resultDiv.innerHTML = '';
+    }
+
+    function renderChips() {
+      const pool = document.getElementById('cv-pool');
+      pool.innerHTML = '';
+
+      const shuffled = Object.values(answers).sort(() => Math.random() - 0.5);
+
+      shuffled.forEach(label => {
+        const el = document.createElement('div');
+        el.className = 'cv-chip';
+        el.textContent = label;
+        el.dataset.chip = label;
+        el.addEventListener('click', () => selectChip(el, label));
+        pool.appendChild(el);
+      });
+    }
+
+    function renderSlots() {
+      document.querySelectorAll('.cv-slot').forEach(slot => {
+        slot.textContent = '???';
+        slot.className = 'cv-slot';
+        slot.onclick = () => placeOnSlot(slot);
+      });
+    }
+
+    function selectChip(el, label) {
+      if (el.classList.contains('placed')) return;
+
+      document.querySelectorAll('.cv-chip.selected').forEach(c => c.classList.remove('selected'));
+
+      if (selectedChip === label) {
+        selectedChip = null;
+        return;
+      }
+
+      selectedChip = label;
+      el.classList.add('selected');
+    }
+
+    function setChipPlaced(label, placed) {
+      document.querySelectorAll('.cv-chip').forEach(c => {
+        if (c.dataset.chip !== label) return;
+        c.classList.toggle('placed', placed);
+        if (placed) c.classList.remove('selected');
+      });
+    }
+
+    function placeOnSlot(slot) {
+      if (!selectedChip) return;
+
+      const key = slot.dataset.slot;
+
+      // Le trou contenait deja une etiquette : on la remet dans le pool
+      if (placements[key]) {
+        setChipPlaced(placements[key], false);
+      }
+
+      placements[key] = selectedChip;
+      slot.textContent = selectedChip;
+      slot.className = 'cv-slot filled';
+
+      setChipPlaced(selectedChip, true);
+
+      document.querySelectorAll('.cv-chip.selected').forEach(c => c.classList.remove('selected'));
+      selectedChip = null;
+    }
+
+    function resetCV() {
+      initCV();
+    }
+
+    function validateCV() {
+      const resultDiv = document.getElementById('result');
+      showLoadingResult(resultDiv, 'Vérification du CV');
+
+      setTimeout(() => {
+        let errors = 0;
+
+        document.querySelectorAll('.cv-slot').forEach(slot => {
+          const key = slot.dataset.slot;
+          const placed = placements[key];
+
+          if (placed === answers[key]) {
+            slot.className = 'cv-slot filled correct';
+          } else {
+            errors++;
+            slot.className = placed ? 'cv-slot filled incorrect' : 'cv-slot';
+          }
+        });
+
+        if (errors === 0) {
+          completeEnigme(resultDiv, 'V');
+          showThomasMessage('Excellent travail ! Le Career Center est de nouveau opérationnel. Votre lettre : V');
+        } else {
+          showErrorResult(resultDiv, errors + ' information(s) incorrecte(s) ou manquante(s). Relisez le CV, tout se recoupe.');
+        }
+      }, 1500);
+    }
+
+    document.addEventListener('DOMContentLoaded', initCV);
+  </script>
+</body>
+</html>

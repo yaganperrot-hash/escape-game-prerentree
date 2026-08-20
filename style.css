@@ -1,0 +1,937 @@
+/* ============================================
+   ETNA ESCAPE GAME v2 - Terminal VSCode Theme
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* VSCode Dark Theme Colors */
+  --bg-primary: #1e1e1e;
+  --bg-secondary: #252526;
+  --bg-tertiary: #2d2d30;
+  --text-primary: #d4d4d4;
+  --text-secondary: #808080;
+  --accent-green: #4ec9b0;
+  --accent-blue: #569cd6;
+  --accent-yellow: #dcdcaa;
+  --accent-orange: #ce9178;
+  --accent-red: #f48771;
+  --border-color: #3e3e42;
+  --success: #89d185;
+  --error: #f14c4c;
+
+  /* ETNA Brand Colors */
+  --etna-blue: #0066cc;
+  --etna-dark: #1a1a1a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ============================================
+   TERMINAL WINDOW
+   ============================================ */
+
+.terminal-window {
+  max-width: 1200px;
+  margin: 20px auto;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.terminal-header {
+  background: var(--bg-tertiary);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  gap: 12px;
+}
+
+.terminal-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.terminal-button {
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  min-height: 12px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.terminal-button.close { background: #ff5f56; }
+.terminal-button.minimize { background: #ffbd2e; }
+.terminal-button.maximize { background: #27c93f; }
+
+.terminal-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.terminal-title img {
+  height: 24px;
+  filter: brightness(1.2);
+}
+
+.terminal-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent-yellow);
+  background: rgba(220, 220, 170, 0.1);
+  padding: 4px 12px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   TERMINAL CONTENT
+   ============================================ */
+
+.terminal-body {
+  padding: 24px;
+  min-height: 500px;
+  font-size: 14px;
+}
+
+.terminal-prompt {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.terminal-prompt-symbol {
+  color: var(--accent-green);
+  font-weight: 600;
+  user-select: none;
+}
+
+.terminal-output {
+  margin-left: 20px;
+  margin-bottom: 16px;
+}
+
+.terminal-line {
+  margin-bottom: 4px;
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* Typewriter Effect */
+.typewriter {
+  overflow: hidden;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  opacity: 0;
+}
+
+.typewriter.typing {
+  opacity: 1;
+}
+
+.warning-box.typewriter,
+.success-box.typewriter,
+.error-box.typewriter,
+.info-box.typewriter {
+  white-space: normal;
+}
+
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background: var(--accent-green);
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* ============================================
+   CONTENT STYLING
+   ============================================ */
+
+h1 {
+  color: var(--accent-blue);
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  border-left: 4px solid var(--accent-blue);
+  padding-left: 12px;
+}
+
+h2 {
+  color: var(--accent-yellow);
+  font-size: 18px;
+  font-weight: 500;
+  margin: 20px 0 12px 0;
+}
+
+p {
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  line-height: 1.8;
+}
+
+.info-box {
+  background: rgba(78, 201, 176, 0.1);
+  border-left: 3px solid var(--accent-green);
+  padding: 12px 16px;
+  margin: 16px 0;
+  border-radius: 4px;
+}
+
+.info-box strong {
+  color: var(--accent-green);
+}
+
+.warning-box {
+  background: rgba(220, 220, 170, 0.1);
+  border-left: 3px solid var(--accent-yellow);
+  padding: 12px 16px;
+  margin: 16px 0;
+  border-radius: 4px;
+}
+
+.warning-box strong,
+.success-box strong,
+.error-box strong,
+.info-box strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.warning-box strong {
+  color: var(--accent-yellow);
+}
+
+.error-box {
+  background: rgba(244, 135, 113, 0.1);
+  border-left: 3px solid var(--accent-red);
+  padding: 12px 16px;
+  margin: 16px 0;
+  border-radius: 4px;
+}
+
+.success-box {
+  background: rgba(137, 209, 133, 0.1);
+  border-left: 3px solid var(--success);
+  padding: 12px 16px;
+  margin: 16px 0;
+  border-radius: 4px;
+}
+
+/* ============================================
+   COMMANDS & INPUTS
+   ============================================ */
+
+.command-help {
+  background: var(--bg-tertiary);
+  padding: 16px;
+  border-radius: 4px;
+  margin: 20px 0;
+  border: 1px solid var(--border-color);
+}
+
+.command-help h3 {
+  color: var(--accent-yellow);
+  font-size: 14px;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.command-list {
+  list-style: none;
+  padding: 0;
+}
+
+.command-list li {
+  padding: 8px 12px;
+  margin: 4px 0;
+  background: rgba(86, 156, 214, 0.1);
+  border-radius: 3px;
+  font-family: 'Fira Code', monospace;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.command-name {
+  color: var(--accent-blue);
+  font-weight: 600;
+  min-width: 120px;
+}
+
+.command-description {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+input[type="text"],
+input[type="password"],
+textarea {
+  width: 100%;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  margin: 8px 0;
+  transition: all 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(86, 156, 214, 0.2);
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder,
+textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+button {
+  background: var(--accent-blue);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 8px 4px;
+}
+
+button:hover {
+  background: var(--etna-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(86, 156, 214, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button.secondary {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+}
+
+button.secondary:hover {
+  background: var(--bg-primary);
+  border-color: var(--accent-blue);
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 13px;
+}
+
+th {
+  background: var(--bg-tertiary);
+  color: var(--accent-yellow);
+  padding: 12px;
+  text-align: left;
+  border: 1px solid var(--border-color);
+  font-weight: 600;
+}
+
+td {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  background: rgba(45, 45, 48, 0.3);
+}
+
+td input {
+  margin: 0;
+}
+
+tr:hover td {
+  background: rgba(86, 156, 214, 0.05);
+}
+
+/* ============================================
+   CODE EDITOR (Service Technique)
+   ============================================ */
+
+.editor-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.editor-preview textarea {
+  min-height: 400px;
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  resize: vertical;
+}
+
+.editor-preview iframe {
+  width: 100%;
+  height: 400px;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+/* ============================================
+   TAP-TO-PLACE (Salle Serveur)
+   ============================================ */
+
+.dropzones-container {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.dropzone {
+  flex: 1;
+  min-width: 250px;
+  background: var(--bg-tertiary);
+  border: 2px dashed var(--border-color);
+  border-radius: 6px;
+  padding: 16px;
+  min-height: 200px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.dropzone.completed {
+  border-color: var(--success);
+  background: rgba(137, 209, 133, 0.1);
+  border-style: solid;
+}
+
+.zone-title {
+  color: var(--accent-yellow);
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.zone-path {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-family: 'Fira Code', monospace;
+  margin-bottom: 12px;
+  padding: 4px 8px;
+  background: rgba(78, 201, 176, 0.1);
+  border-radius: 3px;
+}
+
+.zone-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.block {
+  background: var(--accent-blue);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  user-select: none;
+  border: 2px solid transparent;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(86, 156, 214, 0.4);
+  border-color: var(--accent-green);
+}
+
+.block.selected {
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 0 3px rgba(220, 220, 170, 0.3);
+  transform: scale(1.02);
+}
+
+.block.correct {
+  background: var(--success);
+  animation: successPulse 0.5s ease;
+  cursor: default !important;
+  border-color: var(--success);
+}
+
+.block.correct:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+@keyframes successPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.sous-texte {
+  display: block;
+  font-size: 9px;
+  opacity: 0.8;
+  margin-top: 2px;
+  font-family: 'Fira Code', monospace;
+  line-height: 1.3;
+  word-break: break-all;
+}
+
+#source {
+  width: 100%;
+  margin-top: 20px;
+  min-height: auto;
+  cursor: default;
+}
+
+#source .zone-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+/* ============================================
+   RESULTS & FEEDBACK
+   ============================================ */
+
+.result {
+  margin: 20px 0;
+  padding: 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result.success {
+  background: rgba(137, 209, 133, 0.2);
+  border: 1px solid var(--success);
+  color: var(--success);
+}
+
+.result.error {
+  background: rgba(244, 135, 113, 0.2);
+  border: 1px solid var(--error);
+  color: var(--error);
+}
+
+.result strong {
+  font-size: 16px;
+}
+
+/* ============================================
+   HACKER TOAST NOTIFICATIONS
+   ============================================ */
+
+.hacker-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(30, 0, 0, 0.95);
+  border: 1px solid var(--accent-red);
+  border-left: 4px solid var(--accent-red);
+  color: var(--accent-red);
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  max-width: 350px;
+  z-index: 1000;
+  transform: translateX(120%);
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 20px rgba(244, 71, 71, 0.3);
+}
+
+.hacker-toast.show {
+  transform: translateX(0);
+}
+
+.hacker-toast-label {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+/* ============================================
+   THOMAS MESSAGE BUBBLE
+   ============================================ */
+
+.thomas-bubble {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent-green);
+  border-left: 4px solid var(--accent-green);
+  color: var(--text-primary);
+  padding: 16px;
+  border-radius: 8px;
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  max-width: 400px;
+  z-index: 999;
+  transform: translateY(120%);
+  transition: transform 0.4s ease;
+  box-shadow: 0 4px 20px rgba(78, 201, 176, 0.2);
+}
+
+.thomas-bubble.show {
+  transform: translateY(0);
+}
+
+.thomas-header {
+  color: var(--accent-green);
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.thomas-text {
+  line-height: 1.6;
+}
+
+/* ============================================
+   SPECIAL ANIMATIONS
+   ============================================ */
+
+.glitch-text {
+  color: var(--accent-red);
+  animation: glitch 0.3s infinite;
+  text-shadow:
+    2px 0 var(--accent-blue),
+    -2px 0 var(--accent-green);
+}
+
+.glitch {
+  animation: glitch 1s infinite;
+}
+
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); text-shadow: 2px 0 var(--accent-red), -2px 0 var(--accent-blue); }
+  40% { transform: translate(-2px, -2px); text-shadow: -2px 0 var(--accent-green), 2px 0 var(--accent-yellow); }
+  60% { transform: translate(2px, 2px); text-shadow: 2px 0 var(--accent-blue), -2px 0 var(--accent-red); }
+  80% { transform: translate(2px, -2px); text-shadow: -2px 0 var(--accent-yellow), 2px 0 var(--accent-green); }
+}
+
+.system-log {
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  margin: 4px 0;
+  border-left: 3px solid var(--accent-red);
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  color: var(--text-secondary);
+  opacity: 0;
+  animation: logAppear 0.3s ease forwards;
+}
+
+.system-log.error {
+  border-left-color: var(--accent-red);
+  color: var(--accent-red);
+}
+
+.system-log.warning {
+  border-left-color: var(--accent-yellow);
+  color: var(--accent-yellow);
+}
+
+@keyframes logAppear {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.delayed-text {
+  transition: opacity 0.5s ease;
+}
+
+.delayed-text.show {
+  opacity: 1 !important;
+}
+
+/* Loading dots animation */
+.loading-dots {
+  display: inline-block;
+  animation: loadingDots 1.5s infinite;
+}
+
+@keyframes loadingDots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+/* ============================================
+   CONGRATULATIONS PAGE
+   ============================================ */
+
+.congratulations {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.congratulations h1 {
+  font-size: 48px;
+  border: none;
+  padding: 0;
+  margin-bottom: 24px;
+  animation: rainbow 3s linear infinite;
+}
+
+@keyframes rainbow {
+  0% { color: var(--accent-blue); }
+  33% { color: var(--accent-green); }
+  66% { color: var(--accent-yellow); }
+  100% { color: var(--accent-blue); }
+}
+
+.congratulations p {
+  font-size: 18px;
+  margin: 16px 0;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .terminal-window {
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+  }
+
+  .terminal-header {
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .terminal-controls {
+    display: none;
+  }
+
+  .terminal-body {
+    padding: 16px;
+    font-size: 13px;
+  }
+
+  .editor-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .dropzones-container {
+    flex-direction: column;
+  }
+
+  .dropzone {
+    min-width: 100%;
+  }
+
+  #source .zone-content {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  .hacker-toast {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+
+  .thomas-bubble {
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+}
+
+/* ============================================
+   GAME OVER (temps ecoule)
+   ============================================ */
+
+.timer-critical {
+  color: var(--accent-red) !important;
+  background: rgba(244, 71, 71, 0.15) !important;
+  animation: timerPulse 1s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.gameover-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0a0000;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  animation: gameoverFlash 0.6s ease;
+}
+
+@keyframes gameoverFlash {
+  0% { background: #ffffff; }
+  20% { background: #ff0000; }
+  40% { background: #0a0000; }
+  60% { background: #330000; }
+  100% { background: #0a0000; }
+}
+
+/* Scanlines */
+.gameover-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 0, 0, 0.03) 2px,
+    rgba(255, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+}
+
+.gameover-warning {
+  font-size: 18px;
+  color: #ff3333;
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-bottom: 24px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  animation: glitch 0.3s infinite;
+}
+
+.gameover-skull {
+  font-size: 96px;
+  line-height: 1;
+  margin-bottom: 24px;
+  animation: skullPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skullPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.6)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 24px rgba(255, 0, 0, 0.9)); }
+}
+
+.gameover-message {
+  font-size: 26px;
+  font-weight: 700;
+  color: #ff4444;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  letter-spacing: 2px;
+  line-height: 1.5;
+  max-width: 90%;
+  word-break: break-word;
+  text-shadow: 2px 0 #900, -2px 0 #f66;
+  animation: glitch 0.9s infinite;
+}
+
+@media (max-width: 600px) {
+  .gameover-skull {
+    font-size: 72px;
+  }
+
+  .gameover-message {
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+
+  .gameover-warning {
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+}

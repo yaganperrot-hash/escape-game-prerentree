@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Technique | ETNA Escape Game</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="terminal-window" data-enigme="service-tech">
+    <div class="terminal-header">
+      <div class="terminal-controls">
+        <span class="terminal-button close"></span>
+        <span class="terminal-button minimize"></span>
+        <span class="terminal-button maximize"></span>
+      </div>
+      <div class="terminal-title">
+        <img src="https://etna.io/wp-content/themes/etna-refonte-theme/assets/images/logo-etna.png" alt="ETNA Logo">
+        <span>service-technique.terminal</span>
+      </div>
+      <div class="terminal-timer" id="timer">60:00</div>
+    </div>
+
+    <div class="terminal-body">
+      <div class="terminal-prompt">
+        <span class="terminal-prompt-symbol">$</span>
+        <span>nano intra-login-page.html</span>
+      </div>
+
+      <div class="terminal-output">
+        <h1 class="typewriter" data-text="Service Technique - Salle G19">Service Technique - Salle G19</h1>
+
+        <div class="warning-box typewriter" data-text="Afin de vous empêcher de suivre votre formation, le hacker a bloqué la page de connexion à l'intra. Comme vous pouvez le voir, le bouton « Se connecter » a disparu. Inspectez le code HTML suivant pour le faire réapparaître.">
+          <strong>PAGE DE LOGIN SABOTÉE</strong><br>
+          Afin de vous empêcher de suivre votre formation, le hacker a bloqué la page de connexion à l'intra. Comme vous pouvez le voir, le bouton « Se connecter » a disparu. Inspectez le code HTML suivant pour le faire réapparaître.
+        </div>
+
+        <div class="editor-preview delayed-text" style="opacity: 0;">
+          <textarea id="codeHtml" rows="20">
+<div style="width:100%; text-align:center; font-family:Arial, sans-serif; background:white; padding:20px; box-sizing:border-box;">
+  <h1 style="color:black; font-weight:bold; margin-bottom:20px;">Intranet ETNA</h1>
+  <p style="color:black; margin-bottom:20px;">Connectez-vous à votre espace étudiant</p>
+  <input type="text" placeholder="Identifiant" style="display:block; margin:0 auto 10px auto; padding:10px; width:80%; border:1px solid #ccc; border-radius:6px;">
+  <input type="password" placeholder="Mot de passe" style="display:block; margin:0 auto 10px auto; padding:10px; width:80%; border:1px solid #ccc; border-radius:6px;">
+  <button style="display:none; padding:12px 24px; background:#0066cc; color:white; border:none; border-radius:6px; font-size:15px; cursor:pointer;">Se connecter</button>
+  <p style="color:gray; text-decoration:underline; margin-top:10px;">Identifiants oubliés ?</p>
+</div>
+          </textarea>
+
+          <iframe id="preview"></iframe>
+        </div>
+
+        <div id="result"></div>
+
+        <div class="command-help delayed-text" style="margin-top: 30px; opacity: 0;">
+          <h3>Que chercher ?</h3>
+          <ul style="color: var(--text-secondary); margin-left: 20px; line-height: 2;">
+            <li>Trouvez la ligne avec <code style="color: var(--accent-blue);">&lt;button&gt;</code></li>
+            <li>Regardez le style CSS, c'est le type de code qui définit l'apparence d'une page internet</li>
+            <li>Supprimez ou modifiez la propriété qui cache le bouton</li>
+            <li>Le bouton devrait apparaître dans l'aperçu à droite</li>
+          </ul>
+        </div>
+
+        <div class="delayed-text" style="opacity:0; margin-top: 20px;">
+          <button id="validate-btn" onclick="validateServiceTech()">Valider</button>
+          <a href="hub.html"><button class="secondary">Retour au hub</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Update iframe preview in real-time
+    document.addEventListener('DOMContentLoaded', () => {
+      const textarea = document.getElementById('codeHtml');
+      const iframe = document.getElementById('preview');
+
+      if (textarea && iframe) {
+        function updateIframe() {
+          const doc = iframe.contentDocument || iframe.contentWindow.document;
+          doc.open();
+          doc.write(textarea.value);
+          doc.close();
+        }
+        textarea.addEventListener('input', updateIframe);
+        updateIframe();
+      }
+    });
+
+    function validateServiceTech() {
+      const resultDiv = document.getElementById('result');
+      const textarea = document.getElementById('codeHtml');
+      if (!textarea) return;
+
+      showLoadingResult(resultDiv, 'Analyse du code');
+
+      setTimeout(() => {
+        const code = textarea.value.toLowerCase();
+        const hasButton = code.includes('<button') && !code.includes('display:none') && !code.includes('display: none');
+
+        if (hasButton) {
+          completeEnigme(resultDiv, 'O');
+          showThomasMessage('Bien joué ! Le service technique est restauré. Votre lettre : O');
+        } else {
+          showErrorResult(resultDiv, 'Le bouton doit être visible. Cherchez la propriété CSS qui le cache.');
+        }
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

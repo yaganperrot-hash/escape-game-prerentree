@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salle Serveur | ETNA Escape Game</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <style>
+    .log-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      border-left: 3px solid var(--text-secondary);
+      background: rgba(255,255,255,0.03);
+      border-radius: 0 4px 4px 0;
+      line-height: 1.5;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s, transform 0.3s, border-color 0.3s, background 0.3s;
+    }
+    .log-line.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .log-line .log-tag {
+      color: var(--accent-blue);
+      margin-right: 6px;
+    }
+    .log-line .log-text {
+      flex: 1 1 220px;
+    }
+    .log-line .log-choice {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .log-line .log-choice button {
+      padding: 6px 14px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      background: transparent;
+      border: 1px solid;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .log-line .log-choice .btn-true {
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .log-line .log-choice .btn-false {
+      border-color: var(--error);
+      color: var(--error);
+    }
+    .log-line .log-choice .btn-true.selected {
+      background: var(--success);
+      color: var(--bg-primary);
+    }
+    .log-line .log-choice .btn-false.selected {
+      background: var(--error);
+      color: var(--bg-primary);
+    }
+    .log-line.correct {
+      border-left-color: var(--success);
+      background: rgba(137, 209, 133, 0.08);
+    }
+    .log-line.wrong {
+      border-left-color: var(--error);
+      background: rgba(241, 76, 76, 0.08);
+    }
+    .log-line .correction {
+      flex-basis: 100%;
+      margin-top: 2px;
+      font-size: 0.8rem;
+      color: var(--warning, #e2b93d);
+    }
+    .score-bar {
+      display: flex;
+      gap: 6px;
+      margin: 16px 0;
+      justify-content: center;
+    }
+    .score-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--bg-tertiary, #333);
+      border: 1px solid var(--text-secondary);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .score-dot.answered {
+      background: var(--text-secondary);
+      border-color: var(--text-secondary);
+    }
+    .score-dot.correct {
+      background: var(--success);
+      border-color: var(--success);
+    }
+    .score-dot.wrong {
+      background: var(--error);
+      border-color: var(--error);
+    }
+    .current-question {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="terminal-window" data-enigme="salle-serveur">
+    <div class="terminal-header">
+      <div class="terminal-controls">
+        <span class="terminal-button close"></span>
+        <span class="terminal-button minimize"></span>
+        <span class="terminal-button maximize"></span>
+      </div>
+      <div class="terminal-title">
+        <img src="https://etna.io/wp-content/themes/etna-refonte-theme/assets/images/logo-etna.png" alt="ETNA Logo">
+        <span>salle-serveur.terminal</span>
+      </div>
+      <div class="terminal-timer" id="timer">60:00</div>
+    </div>
+
+    <div class="terminal-body">
+      <div class="terminal-prompt">
+        <span class="terminal-prompt-symbol">$</span>
+        <span>./integrity-check.sh --verify-logs</span>
+      </div>
+
+      <div class="terminal-output">
+        <h1 class="typewriter" data-text="Salle Serveur - Vérification d'intégrité">Salle Serveur - Vérification d'intégrité</h1>
+
+        <div class="warning-box typewriter" data-text="Le hacker a corrompu les logs du serveur. Vérifiez chaque entrée : les informations sont-elles correctes ?">
+          <strong>LOGS CORROMPUS</strong><br>
+          Le hacker a corrompu les logs du serveur. Vérifiez chaque entrée : les informations sont-elles correctes ?
+        </div>
+
+        <div class="score-bar delayed-text" style="opacity:0;" id="score-bar"></div>
+        <div class="current-question delayed-text" style="opacity:0;" id="question-counter"></div>
+
+        <div id="log-container" class="delayed-text" style="opacity:0;"></div>
+
+        <div id="result"></div>
+
+        <div class="delayed-text" style="opacity:0; margin-top: 20px;">
+          <button id="validate-btn" onclick="validateLogs()">Valider</button>
+          <button class="secondary" onclick="resetLogs()">Recommencer</button>
+          <a href="hub.html"><button class="secondary">Retour au hub</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const logs = [
+      {
+        text: "La piscine dure 3 semaines",
+        answer: true,
+        correction: null
+      },
+      {
+        text: "Les langages enseignés en piscine sont Python et Bash",
+        answer: true,
+        correction: null
+      },
+      {
+        text: "Le Code To Work dure 3 mois",
+        answer: true,
+        correction: null
+      },
+      {
+        text: "La piscine enseigne React et Angular",
+        answer: false,
+        correction: "React et Angular sont enseignés en projets C2WK, pas en piscine."
+      },
+      {
+        text: "Les projets C2WK durent 3 semaines",
+        answer: false,
+        correction: "Les projets C2WK durent 9 semaines, pas 3."
+      },
+      {
+        text: "Les horaires de la piscine sont 9h-17h",
+        answer: false,
+        correction: "Les horaires de la piscine sont 9h-22h42, pas 9h-17h."
+      },
+      {
+        text: "Les projets C2WK couvrent Réseau, DEV, UX/UI et ALGO/IA",
+        answer: true,
+        correction: null
+      },
+      {
+        text: "Les horaires de cours sont 9h-17h en semaine",
+        answer: true,
+        correction: null
+      },
+      {
+        text: "Le Career Center aide à trouver une alternance",
+        answer: true,
+        correction: null
+      },
+      {
+        text: "L'ETNA ne propose pas de simulations d'entretiens",
+        answer: false,
+        correction: "L'ETNA propose bien des simulations d'entretiens pour préparer l'alternance."
+      }
+    ];
+
+    const answers = {};       // index du log -> true / false
+    let validated = false;
+
+    function initScoreBar() {
+      const bar = document.getElementById('score-bar');
+      bar.innerHTML = '';
+      for (let i = 0; i < logs.length; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'score-dot';
+        dot.id = 'dot-' + i;
+        bar.appendChild(dot);
+      }
+      updateCounter();
+    }
+
+    function updateCounter() {
+      const answered = Object.keys(answers).length;
+      document.getElementById('question-counter').textContent =
+        'Réponses : ' + answered + ' / ' + logs.length;
+    }
+
+    function renderLogs() {
+      const container = document.getElementById('log-container');
+      container.innerHTML = '';
+
+      logs.forEach((log, i) => {
+        const line = document.createElement('div');
+        line.className = 'log-line';
+        line.id = 'log-' + i;
+
+        const text = document.createElement('div');
+        text.className = 'log-text';
+        const tag = document.createElement('span');
+        tag.className = 'log-tag';
+        tag.textContent = '[LOG ' + String(i + 1).padStart(2, '0') + ']';
+        text.appendChild(tag);
+        text.appendChild(document.createTextNode(' ' + log.text));
+        line.appendChild(text);
+
+        const choice = document.createElement('div');
+        choice.className = 'log-choice';
+        [['TRUE', true, 'btn-true'], ['FALSE', false, 'btn-false']].forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = opt[2];
+          btn.textContent = opt[0];
+          btn.addEventListener('click', () => selectAnswer(i, opt[1]));
+          choice.appendChild(btn);
+        });
+        line.appendChild(choice);
+
+        container.appendChild(line);
+        setTimeout(() => line.classList.add('visible'), 80 * i);
+      });
+    }
+
+    function selectAnswer(index, value) {
+      // Toute nouvelle reponse annule la verification precedente
+      if (validated) clearValidation();
+
+      answers[index] = value;
+
+      const line = document.getElementById('log-' + index);
+      line.querySelectorAll('.log-choice button').forEach(b => b.classList.remove('selected'));
+      line.querySelector(value ? '.btn-true' : '.btn-false').classList.add('selected');
+
+      document.getElementById('dot-' + index).classList.add('answered');
+      updateCounter();
+    }
+
+    function clearValidation() {
+      validated = false;
+      logs.forEach((log, i) => {
+        const line = document.getElementById('log-' + i);
+        line.classList.remove('correct', 'wrong');
+        const corr = line.querySelector('.correction');
+        if (corr) corr.remove();
+        document.getElementById('dot-' + i).classList.remove('correct', 'wrong');
+      });
+      document.getElementById('result').innerHTML = '';
+    }
+
+    function validateLogs() {
+      const resultDiv = document.getElementById('result');
+
+      if (Object.keys(answers).length < logs.length) {
+        showErrorResult(resultDiv, 'Répondez à tous les logs avant de valider.');
+        return;
+      }
+
+      if (validated) clearValidation();
+      showLoadingResult(resultDiv, 'Vérification des logs');
+
+      setTimeout(() => {
+        validated = true;
+        let errors = 0;
+
+        logs.forEach((log, i) => {
+          const line = document.getElementById('log-' + i);
+          const dot = document.getElementById('dot-' + i);
+
+          if (answers[i] === log.answer) {
+            line.classList.add('correct');
+            dot.classList.add('correct');
+          } else {
+            errors++;
+            line.classList.add('wrong');
+            dot.classList.add('wrong');
+            if (log.correction) {
+              const corr = document.createElement('span');
+              corr.className = 'correction';
+              corr.textContent = log.correction;
+              line.appendChild(corr);
+            }
+          }
+        });
+
+        if (errors === 0) {
+          completeEnigme(resultDiv, 'L');
+          showThomasMessage('Logs vérifiés, infrastructure sécurisée ! Votre lettre : L');
+        } else {
+          showErrorResult(resultDiv, errors + ' log' + (errors > 1 ? 's' : '') + ' mal identifié' +
+            (errors > 1 ? 's' : '') + ' sur ' + logs.length + '. Corrigez vos réponses et revalidez.');
+        }
+      }, 1500);
+    }
+
+    function resetLogs() {
+      Object.keys(answers).forEach(k => delete answers[k]);
+      validated = false;
+      document.getElementById('result').innerHTML = '';
+      initScoreBar();
+      renderLogs();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        initScoreBar();
+        renderLogs();
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
