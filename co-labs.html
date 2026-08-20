@@ -31,12 +31,57 @@
       <div class="terminal-output">
         <h1 class="typewriter" data-text="Co-labs - Salle G11">Co-labs - Salle G11</h1>
 
-        <div class="success-box typewriter" data-text="Vous avez restauré tous les services ! Il ne reste plus qu'à identifier le hacker pour le neutraliser définitivement.">
-          <strong>DERNIÈRE ÉTAPE</strong><br>
-          Vous avez restauré tous les services ! Il ne reste plus qu'à identifier le hacker pour le neutraliser définitivement.
+        <div class="warning-box typewriter" data-text="Le hacker s'est servi d'un poste du Co-labs pour brouiller ses traces. Les journaux de la salle sont protégés : il vous faut le code d'accès communiqué pendant la présentation.">
+          <strong>ACCÈS RESTREINT</strong><br>
+          Le hacker s'est servi d'un poste du Co-labs pour brouiller ses traces. Les journaux de la salle sont protégés : il vous faut le code d'accès communiqué pendant la présentation.
         </div>
 
-        <h2 class="typewriter" data-text="Logs système récents">Logs système récents</h2>
+        <!-- ETAPE 1 : code d'acces, obtenu en salle (presentiel) ou en video (distant) -->
+        <div id="step1">
+          <div class="info-box delayed-text presential-only" style="opacity:0;">
+            <strong>Étape 1 - Assistez à la présentation</strong><br>
+            Rendez-vous en salle G11. Le Co-labs est l'espace projets de l'école : matériel
+            informatique et imprimantes 3D à disposition des étudiants pour leurs projets
+            personnels. Le code d'accès vous sera communiqué à la fin de la présentation.
+          </div>
+
+          <div class="info-box delayed-text remote-only" style="opacity:0; display:none;">
+            <strong>Étape 1 - Regardez la présentation</strong><br>
+            Le Co-labs est l'espace projets de l'école : matériel informatique et imprimantes 3D
+            à disposition des étudiants pour leurs projets personnels. Le code d'accès est donné
+            à la fin de la vidéo.
+          </div>
+
+          <!-- Pour integrer la video : remplacer tout ce bloc par
+               <iframe class="delayed-text remote-only" style="opacity:0; display:none; width:100%; aspect-ratio:16/9; border:0;"
+                       src="URL_DE_LA_VIDEO" allowfullscreen></iframe>                       -->
+          <div class="delayed-text remote-only" style="opacity:0; display:none; margin: 16px 0; padding: 32px 16px; border: 1px dashed var(--border-color); border-radius: 6px; text-align: center; color: var(--text-secondary); font-size: 13px;">
+            [ vidéo de présentation du Co-labs ]
+          </div>
+
+          <div class="delayed-text" style="opacity:0; margin: 24px 0;">
+            <label for="code-input" style="display: block; margin-bottom: 8px; color: var(--accent-green); font-weight: 600;">
+              Code d'accès aux journaux :
+            </label>
+            <input
+              type="text"
+              id="code-input"
+              inputmode="numeric"
+              placeholder="Code à 2 chiffres"
+              style="font-size: 18px; letter-spacing: 2px;"
+              autocomplete="off"
+            >
+            <div style="margin-top: 16px;">
+              <button onclick="unlockColabs()">Déverrouiller</button>
+            </div>
+          </div>
+
+          <div id="result-code"></div>
+        </div>
+
+        <!-- ETAPE 2 : journaux de l'imprimante 3D, debloques par le code -->
+        <div id="step2" style="display:none;">
+          <h2>Journaux d'erreur - imprimante 3D</h2>
         <div class="delayed-text" style="background: var(--bg-tertiary); opacity: 0; padding: 16px; border-radius: 4px; border: 1px solid var(--border-color); font-family: 'Fira Code', monospace; font-size: 12px; margin: 20px 0;">
           <div style="color: var(--text-secondary);">[2026-08-18 14:32:15] <span style="color: var(--accent-red);">WARNING</span> Unauthorized access detected</div>
           <div style="color: var(--text-secondary);">[2026-08-18 14:32:18] <span style="color: var(--accent-yellow);">INFO</span> User login: yagan.perrot@etna.io</div>
@@ -76,10 +121,15 @@
           </ul>
         </div>
 
-        <div id="result"></div>
+          <div id="result"></div>
+
+          <div style="margin-top: 20px;">
+            <button id="validate-btn" onclick="validateHacker()">Valider</button>
+          </div>
+        </div>
+        <!-- /step2 -->
 
         <div class="delayed-text" style="opacity:0; margin-top: 20px;">
-          <button id="validate-btn" onclick="validateHacker()">Valider</button>
           <a href="hub.html"><button class="secondary">Retour au hub</button></a>
         </div>
       </div>
@@ -87,6 +137,29 @@
   </div>
 
   <script>
+    const ACCESS_CODE = '42';
+
+    // Etape 1 : le code est donne en salle G11 (presentiel) ou dans la video (distant)
+    function unlockColabs() {
+      const input = document.getElementById('code-input');
+      const resultDiv = document.getElementById('result-code');
+      if (!input) return;
+
+      showLoadingResult(resultDiv, 'Vérification du code');
+
+      setTimeout(() => {
+        if (normalizeInput(input.value) === ACCESS_CODE) {
+          resultDiv.innerHTML = '';
+          document.getElementById('step1').style.display = 'none';
+          document.getElementById('step2').style.display = 'block';
+        } else {
+          showErrorResult(resultDiv, isRemoteMode()
+            ? 'Code incorrect. Il est donné à la fin de la vidéo de présentation.'
+            : 'Code incorrect. Il est donné pendant la présentation en salle G11.');
+        }
+      }, 1500);
+    }
+
     function validateHacker() {
       const input = document.getElementById('hacker-input');
       const resultDiv = document.getElementById('result');
