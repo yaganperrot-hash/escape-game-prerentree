@@ -69,16 +69,6 @@
       font-weight: 600;
       color: var(--success);
     }
-    .contract-line.missed {
-      background: rgba(220, 220, 170, 0.15);
-      border-color: var(--accent-yellow);
-    }
-    .contract-line.missed::after {
-      content: ' [ERREUR NON DÉTECTÉE]';
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--accent-yellow);
-    }
 
     .contract-instructions {
       text-align: center;
@@ -190,7 +180,7 @@
   <script>
     function toggleFlag(line) {
       // Don't allow changes after validation success
-      if (line.classList.contains('correct-flag') || line.classList.contains('missed')) return;
+      if (line.classList.contains('correct-flag')) return;
 
       line.classList.toggle('flagged');
       updateCounter();
@@ -224,7 +214,7 @@
           const isFlagged = line.classList.contains('flagged');
 
           // Clear previous validation classes
-          line.classList.remove('correct-flag', 'missed');
+          line.classList.remove('correct-flag');
 
           if (isError && isFlagged) {
             correctFlags++;
