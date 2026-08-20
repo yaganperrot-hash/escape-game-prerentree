@@ -226,48 +226,6 @@ function allLettersFound() {
 }
 
 // ============================================
-// FEEDBACK DISPLAY
-// ============================================
-
-function showCommandFeedback(message, type = 'info') {
-  const feedback = document.createElement('div');
-  feedback.className = 'terminal-output';
-  feedback.style.marginTop = '12px';
-  feedback.style.padding = '12px';
-  feedback.style.borderRadius = '4px';
-  feedback.style.animation = 'slideIn 0.3s ease';
-
-  if (type === 'success') {
-    feedback.style.background = 'rgba(137, 209, 133, 0.1)';
-    feedback.style.borderLeft = '3px solid var(--success)';
-    feedback.style.color = 'var(--success)';
-  } else if (type === 'error') {
-    feedback.style.background = 'rgba(244, 135, 113, 0.1)';
-    feedback.style.borderLeft = '3px solid var(--error)';
-    feedback.style.color = 'var(--error)';
-  } else if (type === 'warning') {
-    feedback.style.background = 'rgba(220, 220, 170, 0.1)';
-    feedback.style.borderLeft = '3px solid var(--accent-yellow)';
-    feedback.style.color = 'var(--accent-yellow)';
-  } else {
-    feedback.style.background = 'rgba(78, 201, 176, 0.1)';
-    feedback.style.borderLeft = '3px solid var(--accent-green)';
-    feedback.style.color = 'var(--accent-green)';
-  }
-
-  feedback.textContent = message;
-
-  const commandInput = document.querySelector('[id*="commandInput"]');
-  if (commandInput && commandInput.parentElement) {
-    commandInput.parentElement.parentElement.insertBefore(feedback, commandInput.parentElement);
-  }
-
-  setTimeout(() => {
-    feedback.remove();
-  }, 3000);
-}
-
-// ============================================
 // VALIDATION RESULT DISPLAY
 // ============================================
 
@@ -288,38 +246,6 @@ function showErrorResult(resultDiv, message) {
 
 function showLoadingResult(resultDiv, message) {
   resultDiv.innerHTML = `<div class="terminal-output" style="color: var(--accent-yellow);">${message}<span class="loading-dots">...</span></div>`;
-}
-
-// ============================================
-// SYSTEM LOGS DISPLAY
-// ============================================
-
-function showSystemLogs(container, logs, callback) {
-  if (!container) {
-    if (callback) callback();
-    return;
-  }
-
-  let logIndex = 0;
-
-  function showNextLog() {
-    if (logIndex < logs.length) {
-      const log = logs[logIndex];
-      const logElement = document.createElement('div');
-      logElement.className = `system-log ${log.type}`;
-      logElement.textContent = log.text;
-      logElement.style.animationDelay = `${logIndex * 0.1}s`;
-
-      container.appendChild(logElement);
-      logIndex++;
-
-      setTimeout(showNextLog, 400);
-    } else {
-      if (callback) callback();
-    }
-  }
-
-  showNextLog();
 }
 
 // ============================================
@@ -393,10 +319,6 @@ function showHackerToast(msg) {
   }, 5000);
 }
 
-function randomBetween(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 // ============================================
 // THOMAS MESSAGES
 // ============================================
@@ -425,14 +347,6 @@ function showThomasMessage(text, callback) {
       setTimeout(callback, 1000);
     }
   });
-}
-
-function hideThomasMessage() {
-  const bubble = document.querySelector('.thomas-bubble');
-  if (bubble) {
-    bubble.classList.remove('show');
-    setTimeout(() => bubble.remove(), 300);
-  }
 }
 
 // ============================================
