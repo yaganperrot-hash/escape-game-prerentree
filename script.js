@@ -343,6 +343,14 @@ function showThomasMessage(text, callback) {
   // Typewriter effect in the bubble
   const textEl = bubble.querySelector('.thomas-text');
   typeWriter(textEl, text, 20, () => {
+    // Add "Retour au hub" button (skip on final.html)
+    if (!window.location.pathname.includes('final.html')) {
+      const btn = document.createElement('a');
+      btn.href = 'hub.html';
+      btn.textContent = 'Retour au hub';
+      btn.style.cssText = 'display:inline-block;margin-top:12px;padding:8px 20px;background:var(--accent-green);color:var(--bg-primary);border-radius:4px;text-decoration:none;font-weight:600;font-size:13px;';
+      bubble.appendChild(btn);
+    }
     if (callback) {
       setTimeout(callback, 1000);
     }
