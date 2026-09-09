@@ -241,7 +241,7 @@
           // sinon le contrat designe lui-meme les erreurs ratees.
           let msg = correctFlags + '/5 erreurs trouvées.';
           if (falseFlags > 0) msg += ' ' + falseFlags + ' fausse(s) alerte(s).';
-          if (missedErrors > 0) msg += ' ' + missedErrors + ' erreur(s) manquée(s).';
+          msg += ' Continuez à chercher !';
           showErrorResult(resultDiv, msg);
         }
       }, 1500);

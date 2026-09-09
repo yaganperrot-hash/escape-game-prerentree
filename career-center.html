@@ -418,6 +418,7 @@
             slot.className = 'cv-slot filled correct';
           } else {
             errors++;
+            // Mark incorrect but never reveal the correct answer
             slot.className = placed ? 'cv-slot filled incorrect' : 'cv-slot';
           }
         });

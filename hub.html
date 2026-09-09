@@ -134,6 +134,19 @@
       margin-bottom: 12px;
     }
 
+    .service-qr {
+      text-align: center;
+      margin: 12px 0 8px;
+    }
+
+    .service-qr img {
+      width: 140px;
+      height: 140px;
+      border-radius: 6px;
+      background: #fff;
+      padding: 4px;
+    }
+
     .service-status {
       font-size: 12px;
       color: var(--text-secondary);
@@ -260,12 +273,12 @@
 
   <script>
     const services = [
-      { name: 'Career Center', room: 'Salle G01', letter: 'V', page: 'career-center.html', desc: 'Compléter le CV' },
-      { name: 'Service Technique', room: 'Salle G19', letter: 'O', page: 'service-tech.html', desc: 'Réparer la page de login' },
-      { name: 'Salle Serveur', room: 'Infrastructure', letter: 'L', page: 'salle-serveur.html', desc: 'Ranger les fichiers' },
-      { name: 'Service Pédagogique', room: 'Salle G18', letter: 'C', page: 'service-peda.html', desc: 'Reconstituer le planning' },
-      { name: 'Service Administratif', room: 'Salle G12', letter: 'A', page: 'service-admin.html', desc: 'Vérifier le contrat' },
-      { name: 'Co-labs', room: 'Salle G11', letter: 'N', page: 'co-labs.html', desc: 'Identifier le hacker' }
+      { name: 'Career Center', room: 'Salle G01', letter: 'V', page: 'career-center.html', desc: 'Compléter le CV', qr: 'qrcodes/career-center.png' },
+      { name: 'Service Technique', room: 'Salle G19', letter: 'O', page: 'service-tech.html', desc: 'Réparer la page de login', qr: 'qrcodes/service-tech.png' },
+      { name: 'Salle Serveur', room: 'Infrastructure', letter: 'L', page: 'salle-serveur.html', desc: 'Ranger les fichiers', qr: 'qrcodes/salle-serveur.png' },
+      { name: 'Service Pédagogique', room: 'Salle G18', letter: 'C', page: 'service-peda.html', desc: 'Reconstituer le planning', qr: 'qrcodes/service-peda.png' },
+      { name: 'Service Administratif', room: 'Salle G12', letter: 'A', page: 'service-admin.html', desc: 'Vérifier le contrat', qr: 'qrcodes/service-admin.png' },
+      { name: 'Co-labs', room: 'Salle G11', letter: 'N', page: 'co-labs.html', desc: 'Identifier le hacker', qr: 'qrcodes/co-labs.png' }
     ];
 
     function selectMode(mode) {
@@ -295,6 +308,7 @@
             ${isCompleted ? '<span class="service-letter">' + service.letter + '</span>' : ''}
           </div>
           <div class="service-room">${escapeHtml(service.room)}</div>
+          ${!isCompleted ? '<div class="service-qr"><img src="' + service.qr + '" alt="QR Code ' + escapeHtml(service.name) + '"></div>' : ''}
           <div class="service-status">
             ${isCompleted
               ? 'Restauré - Lettre obtenue'

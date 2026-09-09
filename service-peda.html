@@ -552,36 +552,33 @@
       setTimeout(() => {
         let errors = 0;
 
-        // Check horaire
+        // Check horaire - show green/red but never reveal the answer
         const horaireSlot = document.getElementById('horaire-slot');
+        horaireSlot.classList.remove('correct', 'incorrect');
         if (horairePlaced === '9h - 22h42') {
           horaireSlot.classList.add('correct');
-          horaireSlot.classList.remove('incorrect');
         } else {
           errors++;
           if (horairePlaced) {
             horaireSlot.classList.add('incorrect');
-            horaireSlot.classList.remove('correct');
           }
         }
 
-        // Check calendar slots
+        // Check calendar slots - show green/red but never reveal the answer
         weeks.forEach((week, wIdx) => {
           week.days.forEach((day, dIdx) => {
             if (day.type !== 'empty') return;
-
             const key = wIdx + '-' + dIdx;
             const placed = placements[key];
             const content = document.querySelector(`.day-content[data-week="${wIdx}"][data-day="${dIdx}"]`);
+            content.classList.remove('correct', 'incorrect');
 
             if (placed === day.answer) {
               content.classList.add('correct');
-              content.classList.remove('incorrect');
             } else {
               errors++;
               if (placed) {
                 content.classList.add('incorrect');
-                content.classList.remove('correct');
               }
             }
           });
