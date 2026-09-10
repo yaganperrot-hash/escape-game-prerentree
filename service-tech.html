@@ -101,8 +101,8 @@
         const hasButton = code.includes('<button') && !code.includes('display:none') && !code.includes('display: none');
 
         if (hasButton) {
-          completeEnigme(resultDiv, 'O');
-          showThomasMessage('Bien joué ! Le service technique est restauré. Votre lettre : O');
+          completeEnigme(resultDiv, 'A');
+          showThomasMessage('Bien joué ! Le service technique est restauré. Votre lettre : A');
         } else {
           showErrorResult(resultDiv, 'Le bouton doit être visible. Cherchez la propriété CSS qui le cache.');
         }
