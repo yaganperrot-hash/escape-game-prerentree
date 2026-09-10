@@ -38,11 +38,11 @@ function initTimer() {
   const timerElement = document.getElementById('timer');
   if (!timerElement) return;
 
-  if (!sessionStorage.getItem('escapeGameStartTime')) {
-    sessionStorage.setItem('escapeGameStartTime', Date.now().toString());
+  if (!localStorage.getItem('escapeGameStartTime')) {
+    localStorage.setItem('escapeGameStartTime', Date.now().toString());
   }
 
-  startTime = parseInt(sessionStorage.getItem('escapeGameStartTime'));
+  startTime = parseInt(localStorage.getItem('escapeGameStartTime'));
 
   if (renderTimer(timerElement) === 0) {
     triggerGameOver();
@@ -209,7 +209,7 @@ function normalizeInput(str) {
 const LETTERS = ['V', 'O', 'L', 'C', 'A', 'N'];
 
 function getFoundLetters() {
-  const stored = sessionStorage.getItem('lettresFound');
+  const stored = localStorage.getItem('lettresFound');
   if (stored) return JSON.parse(stored);
   return { V: false, O: false, L: false, C: false, A: false, N: false };
 }
@@ -217,7 +217,7 @@ function getFoundLetters() {
 function saveLetter(letter) {
   const found = getFoundLetters();
   found[letter] = true;
-  sessionStorage.setItem('lettresFound', JSON.stringify(found));
+  localStorage.setItem('lettresFound', JSON.stringify(found));
 }
 
 function allLettersFound() {
@@ -253,11 +253,11 @@ function showLoadingResult(resultDiv, message) {
 // ============================================
 
 function getGameMode() {
-  return sessionStorage.getItem('gameMode') || 'presential';
+  return localStorage.getItem('gameMode') || 'presential';
 }
 
 function setGameMode(mode) {
-  sessionStorage.setItem('gameMode', mode);
+  localStorage.setItem('gameMode', mode);
 }
 
 function isRemoteMode() {

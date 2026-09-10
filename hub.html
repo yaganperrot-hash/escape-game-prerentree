@@ -316,7 +316,7 @@
 
     // On load: check if mode already selected
     document.addEventListener('DOMContentLoaded', () => {
-      const mode = sessionStorage.getItem('gameMode');
+      const mode = localStorage.getItem('gameMode');
       if (mode) {
         document.getElementById('mode-selector').style.display = 'none';
         document.getElementById('hub-dashboard').classList.add('active');

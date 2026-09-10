@@ -397,10 +397,10 @@
 
     function acceptMission() {
       // Start the timer
-      sessionStorage.setItem('escapeGameStartTime', Date.now().toString());
+      localStorage.setItem('escapeGameStartTime', Date.now().toString());
       // Clear any previous letters
-      sessionStorage.removeItem('lettresFound');
-      sessionStorage.removeItem('gameMode');
+      localStorage.removeItem('lettresFound');
+      localStorage.removeItem('gameMode');
       // Go to hub
       window.location.href = 'hub.html';
     }

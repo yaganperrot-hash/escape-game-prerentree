@@ -183,7 +183,7 @@
           document.getElementById('victory-phase').style.display = 'block';
 
           // Show final time
-          const startTime = parseInt(sessionStorage.getItem('escapeGameStartTime'));
+          const startTime = parseInt(localStorage.getItem('escapeGameStartTime'));
           if (startTime) {
             const elapsed = Date.now() - startTime;
             const minutes = Math.floor(elapsed / 60000);
@@ -202,7 +202,11 @@
     }
 
     function replayGame() {
-      sessionStorage.clear();
+      // Pas de localStorage.clear() : l'origine github.io est partagee avec les autres
+      // sites GitHub Pages du compte, on ne supprime que les cles du jeu.
+      localStorage.removeItem('escapeGameStartTime');
+      localStorage.removeItem('lettresFound');
+      localStorage.removeItem('gameMode');
       window.location.href = 'intro.html';
     }
   </script>
