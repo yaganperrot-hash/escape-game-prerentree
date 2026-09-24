@@ -134,6 +134,16 @@
       margin-bottom: 12px;
     }
 
+    /* Remote mode: service presentation video */
+    .service-video {
+      display: block;
+      width: 100%;
+      max-height: 360px;
+      margin-bottom: 12px;
+      border-radius: 4px;
+      background: #000;
+    }
+
     .service-status {
       font-size: 12px;
       color: var(--text-secondary);
@@ -260,11 +270,11 @@
 
   <script>
     const services = [
-      { name: 'Career Center', room: 'Salle G01', letter: 'N', page: 'career-center.html', desc: 'Compléter le CV' },
-      { name: 'Service Technique', room: 'Salle G19', letter: 'A', page: 'service-tech.html', desc: 'Réparer la page de login' },
-      { name: 'Salle Serveur', room: 'Salle G05', letter: 'C', page: 'salle-serveur.html', desc: 'Vérifier les logs' },
-      { name: 'Service Pédagogique', room: 'Salle G18', letter: 'L', page: 'service-peda.html', desc: 'Reconstituer le planning' },
-      { name: 'Service Administratif', room: 'Salle G12', letter: 'O', page: 'service-admin.html', desc: 'Vérifier le contrat' },
+      { name: 'Career Center', room: 'Salle G01', letter: 'N', page: 'career-center.html', desc: 'Compléter le CV', video: 'videos/career-center.mp4' },
+      { name: 'Service Technique', room: 'Salle G19', letter: 'A', page: 'service-tech.html', desc: 'Réparer la page de login', video: 'videos/service-tech.mp4' },
+      { name: 'Salle Serveur', room: 'Salle G05', letter: 'C', page: 'salle-serveur.html', desc: 'Vérifier les logs', video: 'videos/salle-serveur.mp4' },
+      { name: 'Service Pédagogique', room: 'Salle G18', letter: 'L', page: 'service-peda.html', desc: 'Reconstituer le planning', video: 'videos/service-peda.mp4' },
+      { name: 'Service Administratif', room: 'Salle G12', letter: 'O', page: 'service-admin.html', desc: 'Vérifier le contrat', video: 'videos/service-admin.mp4' },
       { name: 'Co-labs', room: 'Salle G11', letter: 'V', page: 'co-labs.html', desc: 'Identifier le hacker' }
     ];
 
@@ -295,6 +305,10 @@
             ${isCompleted ? '<span class="service-letter">' + service.letter + '</span>' : ''}
           </div>
           <div class="service-room">${escapeHtml(service.room)}</div>
+          ${remote && service.video
+            ? '<video class="service-video" src="' + service.video + '" controls playsinline preload="metadata"></video>'
+            : ''
+          }
           <div class="service-status">
             ${isCompleted
               ? 'Restauré - Lettre obtenue'
